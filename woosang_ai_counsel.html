@@ -13,24 +13,17 @@
   --navy-700: #16305c;
   --navy-600: #1e3f73;
   --gold: #c9a45c;
-  --gold-light: #b8893f;
+  --gold-light: #e0c389;
   --gold-dim: #8a703f;
-  --cream: #fbf8f1;
-  --cream-card: #ffffff;
-  --ivory-border: #e8ddc8;
-  --text-dark: #2a2520;
-  --text-mid: #5c5448;
+  --cream: #f7f4ed;
   --text-light: #e8ecf2;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body {
-  height: 100vh;
-  overflow: hidden;
-}
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  background: var(--cream);
+  background: linear-gradient(160deg, var(--navy-900) 0%, var(--navy-800) 100%);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -74,7 +67,6 @@ body {
 /* 채팅 영역 */
 .chat-area {
   flex: 1; overflow-y: auto;
-  min-height: 0;
   padding: 24px 18px;
   display: flex; flex-direction: column; gap: 14px;
   max-width: 760px; width: 100%; margin: 0 auto;
@@ -100,11 +92,11 @@ body {
   border-radius: 16px; font-size: 14.5px; line-height: 1.7;
 }
 .msg.bot .msg-bubble {
-  background: var(--cream-card);
-  border: 1px solid var(--ivory-border);
-  color: var(--text-dark);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,164,92,0.18);
+  color: var(--text-light);
   border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  backdrop-filter: blur(6px);
 }
 .msg.user .msg-bubble {
   background: linear-gradient(135deg, var(--navy-600), var(--navy-700));
@@ -116,34 +108,34 @@ body {
 /* 선택지 버튼 */
 .choices { display: flex; flex-wrap: wrap; gap: 9px; padding: 4px 0 4px 44px; }
 .choice-btn {
-  background: var(--cream-card);
-  border: 1.5px solid var(--gold);
+  background: rgba(201,164,92,0.06);
+  border: 1px solid rgba(201,164,92,0.5);
   color: var(--gold-light);
   padding: 9px 18px; border-radius: 20px; font-size: 13px;
   cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
-.choice-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+.choice-btn:hover { background: var(--gold); color: var(--navy-900); border-color: var(--gold); }
 
 /* ===== 결과 카드 (요약 / 분석) ===== */
 .result-card {
   max-width: 100%;
-  background: var(--cream-card);
-  border: 1px solid var(--ivory-border);
+  background: linear-gradient(155deg, var(--navy-800), var(--navy-900));
+  border: 1px solid rgba(201,164,92,0.3);
   border-radius: 16px;
   padding: 22px 22px 18px;
   margin-left: 44px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 .result-card + .result-card { margin-top: 4px; }
 .result-title {
   font-family: 'Noto Serif KR', serif;
-  color: var(--navy-800);
+  color: var(--gold-light);
   font-size: 15px; font-weight: 700;
   letter-spacing: 0.3px;
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--ivory-border);
+  border-bottom: 1px solid rgba(201,164,92,0.22);
 }
 .result-title::before { content: ''; width: 4px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block; }
 
@@ -151,15 +143,15 @@ body {
 .summary-row {
   display: flex; justify-content: space-between; gap: 12px;
   padding: 9px 4px;
-  border-bottom: 1px solid #f1ece0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   font-size: 13.5px;
 }
 .summary-row:last-child { border-bottom: none; }
-.summary-label { color: var(--text-mid); font-weight: 500; flex-shrink: 0; min-width: 90px; }
-.summary-value { color: var(--text-dark); text-align: right; font-weight: 600; }
+.summary-label { color: rgba(201,164,92,0.85); font-weight: 500; flex-shrink: 0; min-width: 90px; }
+.summary-value { color: var(--text-light); text-align: right; font-weight: 500; }
 
 .stars { letter-spacing: 2px; font-size: 16px; color: var(--gold); }
-.stars .dim { color: #e8ddc8; }
+.stars .dim { color: rgba(255,255,255,0.15); }
 
 .grade-badge {
   display: inline-flex; align-items: center; justify-content: center;
@@ -167,13 +159,13 @@ body {
   font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 14px;
   border: 1.5px solid var(--gold);
   color: var(--gold-light);
-  background: #fbf3e2;
+  background: rgba(201,164,92,0.08);
 }
 
 .opinion-block, .check-block {
-  font-size: 13.5px; line-height: 1.75; color: var(--text-dark);
-  background: #fbf8f1;
-  border-left: 2px solid var(--gold);
+  font-size: 13.5px; line-height: 1.75; color: var(--text-light);
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid var(--gold-dim);
   padding: 10px 14px; border-radius: 6px;
   margin-top: 4px;
 }
@@ -182,14 +174,14 @@ body {
 
 .reserve-banner {
   margin-top: 16px; padding: 14px 16px;
-  background: #fbf3e2;
-  border: 1px solid var(--gold);
+  background: rgba(201,164,92,0.08);
+  border: 1px solid rgba(201,164,92,0.4);
   border-radius: 10px;
-  text-align: center; font-size: 13px; color: var(--text-dark);
+  text-align: center; font-size: 13px; color: var(--text-light);
   line-height: 1.7;
 }
-.reserve-banner b { color: var(--navy-800); }
-.reserve-banner a { color: var(--navy-800); text-decoration: none; font-weight: 700; }
+.reserve-banner b { color: var(--gold-light); }
+.reserve-banner a { color: var(--gold-light); text-decoration: none; font-weight: 700; }
 
 /* 입력 영역 */
 .input-area {
@@ -246,6 +238,204 @@ body {
   padding: 9px; text-align: center;
   font-size: 10.5px; color: rgba(232,236,242,0.35);
 }
+
+/* ===== 2026-06-30 가독성/스크롤/문단 수정 ===== */
+html, body {
+  height: 100%;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.chat-area {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  padding: 28px 22px 230px 22px !important;
+  gap: 18px !important;
+  max-width: 860px !important;
+  scroll-behavior: smooth;
+}
+
+.msg-bubble {
+  max-width: 82% !important;
+  padding: 16px 20px !important;
+  border-radius: 18px !important;
+  font-size: 17px !important;
+  line-height: 1.9 !important;
+  word-break: keep-all !important;
+}
+
+.msg.bot .msg-bubble {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(201,164,92,0.30) !important;
+  color: #f6f7fb !important;
+}
+
+.choice-btn {
+  padding: 12px 22px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  border-radius: 23px !important;
+}
+
+.result-card {
+  max-width: calc(100% - 44px) !important;
+  background: #ffffff !important;
+  border: 1px solid #e6d6b8 !important;
+  border-radius: 18px !important;
+  padding: 26px 26px 24px !important;
+  margin-left: 44px !important;
+  margin-bottom: 22px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22) !important;
+  color: #1f2937 !important;
+}
+
+.result-title {
+  color: var(--navy-800) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  margin-bottom: 18px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 2px solid #efe4cf !important;
+}
+
+.summary-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding: 13px 14px !important;
+  border-bottom: 1px solid #f0eadf !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+}
+
+.summary-label {
+  color: #735c2d !important;
+  font-weight: 700 !important;
+  flex-shrink: 0 !important;
+  min-width: 105px !important;
+}
+
+.summary-value {
+  color: #111827 !important;
+  text-align: right !important;
+  font-weight: 700 !important;
+}
+
+.stars {
+  letter-spacing: 3px !important;
+  font-size: 22px !important;
+  color: var(--gold) !important;
+}
+
+.stars .dim {
+  color: #ddd6c7 !important;
+}
+
+.grade-badge {
+  width: 38px !important;
+  height: 38px !important;
+  font-size: 18px !important;
+  border: 2px solid var(--gold) !important;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim)) !important;
+}
+
+.opinion-block,
+.check-block {
+  font-size: 16.5px !important;
+  line-height: 1.9 !important;
+  color: #1f2937 !important;
+  background: #fbf8f1 !important;
+  border: 1px solid #eadcc2 !important;
+  border-left: 4px solid var(--gold) !important;
+  padding: 16px 18px !important;
+  border-radius: 12px !important;
+  margin-top: 8px !important;
+  word-break: keep-all !important;
+}
+
+.reserve-banner {
+  margin-top: 20px !important;
+  padding: 18px 20px !important;
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-700)) !important;
+  border: 1px solid rgba(201,164,92,0.45) !important;
+  border-radius: 14px !important;
+  text-align: center !important;
+  font-size: 16px !important;
+  color: #ffffff !important;
+  line-height: 1.8 !important;
+}
+
+.input-area {
+  padding: 16px 22px !important;
+  max-width: 860px !important;
+}
+
+.input-area textarea {
+  font-size: 17px !important;
+  line-height: 1.6 !important;
+  padding: 14px 18px !important;
+  border-radius: 22px !important;
+  max-height: 120px !important;
+}
+
+.send-btn {
+  width: 50px !important;
+  height: 50px !important;
+  font-size: 20px !important;
+}
+
+@media (max-width: 640px) {
+  .chat-area {
+    padding: 20px 12px 220px 12px !important;
+  }
+
+  .msg-bubble {
+    max-width: 86% !important;
+    font-size: 16.5px !important;
+    line-height: 1.85 !important;
+    padding: 15px 17px !important;
+  }
+
+  .choices {
+    padding-left: 0 !important;
+    justify-content: center !important;
+  }
+
+  .choice-btn {
+    font-size: 15px !important;
+    padding: 11px 16px !important;
+  }
+
+  .result-card {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    padding: 22px 18px !important;
+  }
+
+  .summary-row {
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .summary-value {
+    text-align: left !important;
+  }
+
+  .input-area {
+    padding: 14px 12px !important;
+  }
+
+  .input-area textarea {
+    font-size: 16px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -418,8 +608,34 @@ function handleKey(e) {
   }
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escapeHtml(str = '') {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatMessageText(text = '') {
+  return escapeHtml(text)
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+function scrollToBottom(force = false) {
+  const area = document.getElementById('chatArea');
+  if (!area) return;
+
+  const run = () => {
+    area.scrollTop = area.scrollHeight + 9999;
+    const last = area.lastElementChild;
+    if (force && last) {
+      last.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  };
+
+  run();
+  requestAnimationFrame(run);
+  setTimeout(run, 80);
+  setTimeout(run, 250);
+  setTimeout(run, 650);
 }
 
 function addMessage(role, text) {
@@ -429,10 +645,10 @@ function addMessage(role, text) {
   const avatar = role === 'user' ? '👤' : '⚖️';
   div.innerHTML = `
     <div class="msg-avatar">${avatar}</div>
-    <div class="msg-bubble">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+    <div class="msg-bubble">${formatMessageText(text)}</div>
   `;
   area.appendChild(div);
-  area.scrollTop = area.scrollHeight;
+  scrollToBottom(true);
 }
 
 function starsHtml(n) {
@@ -445,59 +661,113 @@ function starsHtml(n) {
   return html;
 }
 
+function parseLine(line) {
+  if (!line) return null;
+  const clean = String(line).replace(/^[\s*\-#>]+/, '').trim();
+
+  let idx = clean.indexOf('|');
+  if (idx === -1) idx = clean.indexOf(':');
+  if (idx === -1) return null;
+
+  const key = clean.slice(0, idx).replace(/\*/g, '').trim();
+  const val = clean.slice(idx + 1).replace(/\*/g, '').trim();
+
+  if (!key) return null;
+  return { key, val };
+}
+
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
+  if (!area || !rawText) return false;
 
-  const summaryMatch = rawText.match(/\[\[SUMMARY_START\]\]([\s\S]*?)\[\[SUMMARY_END\]\]/);
-  const analysisMatch = rawText.match(/\[\[ANALYSIS_START\]\]([\s\S]*?)\[\[ANALYSIS_END\]\]/);
+  if (
+    !rawText.includes('[[SUMMARY_START]]') &&
+    !rawText.includes('[[ANALYSIS_START]]')
+  ) {
+    return false;
+  }
+
+  const summaryMatch = rawText.match(/\[\[\s*SUMMARY_START\s*\]\]([\s\S]*?)\[\[\s*SUMMARY_END\s*\]\]/i);
+  const analysisMatch = rawText.match(/\[\[\s*ANALYSIS_START\s*\]\]([\s\S]*?)\[\[\s*ANALYSIS_END\s*\]\]/i);
+
+  let rendered = false;
 
   if (summaryMatch) {
-    const rows = summaryMatch[1].trim().split('\n').filter(Boolean).map(line => {
-      const [label, ...rest] = line.split('|');
-      return { label: (label||'').trim(), value: rest.join('|').trim() };
-    });
-    const card = document.createElement('div');
-    card.className = 'result-card';
-    card.innerHTML = `
-      <div class="result-title">상담 내용 요약</div>
-      <div class="summary-grid">
-        ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
-      </div>
-    `;
-    area.appendChild(card);
+    const rows = summaryMatch[1]
+      .trim()
+      .split(/\r?\n+/)
+      .map(parseLine)
+      .filter(Boolean)
+      .filter(r => r.key && r.val);
+
+    if (rows.length > 0) {
+      rendered = true;
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML = `
+        <div class="result-title">📋 상담 내용 요약</div>
+        <div class="summary-grid">
+          ${rows.map(r => `
+            <div class="summary-row">
+              <span class="summary-label">${escapeHtml(r.key)}</span>
+              <span class="summary-value">${escapeHtml(r.val)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      area.appendChild(card);
+    }
   }
 
   if (analysisMatch) {
-    const lines = analysisMatch[1].trim().split('\n').filter(Boolean);
-    let stars = 3, grade = 'B', opinion = '', check = [];
-    lines.forEach(line => {
-      const idx = line.indexOf('|');
-      if (idx === -1) return;
-      const key = line.slice(0, idx).trim();
-      const val = line.slice(idx + 1).trim();
-      if (key === 'STARS') stars = val;
-      else if (key === 'GRADE') grade = val;
-      else if (key === 'OPINION') opinion = val;
-      else if (key === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
+    const parsed = analysisMatch[1]
+      .trim()
+      .split(/\r?\n+/)
+      .map(parseLine)
+      .filter(Boolean);
+
+    let stars = 3;
+    let grade = 'B';
+    let opinion = '';
+    let check = [];
+
+    parsed.forEach(({ key, val }) => {
+      const k = key.toUpperCase().trim();
+      if (k === 'STARS') stars = val;
+      else if (k === 'GRADE') grade = val;
+      else if (k === 'OPINION') opinion = val;
+      else if (k === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
     });
 
+    rendered = true;
     const card = document.createElement('div');
     card.className = 'result-card';
     card.innerHTML = `
-      <div class="result-title">AI 1차 분석</div>
+      <div class="result-title">⚖️ AI 1차 분석</div>
       <div class="summary-grid">
-        <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
-        <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
+        <div class="summary-row">
+          <span class="summary-label">검토 가능성</span>
+          <span class="summary-value">${starsHtml(stars)}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">상담 난이도</span>
+          <span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span>
+        </div>
       </div>
-      <div style="margin-top:14px;">
-        <div class="summary-label" style="margin-bottom:6px;">검토 의견</div>
-        <div class="opinion-block">${escapeHtml(opinion)}</div>
+
+      <div style="margin-top:20px;">
+        <div class="summary-label" style="margin-bottom:8px;">검토 의견</div>
+        <div class="opinion-block">${formatMessageText(opinion || '입력된 내용을 기준으로 변호사 상담을 통해 구체적인 검토가 필요합니다.')}</div>
       </div>
+
       ${check.length ? `
-      <div style="margin-top:12px;">
-        <div class="summary-label" style="margin-bottom:6px;">추가 확인 사항</div>
-        <div class="check-block"><ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></div>
+      <div style="margin-top:18px;">
+        <div class="summary-label" style="margin-bottom:8px;">추가 확인 사항</div>
+        <div class="check-block">
+          <ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
+        </div>
       </div>` : ''}
+
       <div class="reserve-banner">
         무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
         우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
@@ -506,8 +776,16 @@ function renderResultCards(rawText) {
     area.appendChild(card);
   }
 
-  area.scrollTop = area.scrollHeight;
-  return !!(summaryMatch || analysisMatch);
+  if (rendered) {
+    document.querySelectorAll('.result-spacer').forEach(el => el.remove());
+    const spacer = document.createElement('div');
+    spacer.className = 'result-spacer';
+    spacer.style.height = '160px';
+    area.appendChild(spacer);
+  }
+
+  scrollToBottom(true);
+  return rendered;
 }
 
 function addChoices(choices) {
@@ -527,7 +805,7 @@ function addChoices(choices) {
     div.appendChild(btn);
   });
   area.appendChild(div);
-  area.scrollTop = area.scrollHeight;
+  scrollToBottom(true);
 }
 
 function showTyping() {
@@ -537,11 +815,12 @@ function showTyping() {
   div.id = 'typing';
   div.innerHTML = `<div class="msg-avatar">⚖️</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
   area.appendChild(div);
-  area.scrollTop = area.scrollHeight;
+  scrollToBottom(true);
 }
 
 function removeTyping() {
   document.getElementById('typing')?.remove();
+  scrollToBottom(true);
 }
 
 async function callClaude(userMessage) {
@@ -558,8 +837,24 @@ async function callClaude(userMessage) {
     })
   });
 
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    console.error('[AI 상담원] API 오류:', response.status, errText);
+    throw new Error('API 응답 오류: ' + response.status);
+  }
+
   const data = await response.json();
-  const reply = data.content[0].text;
+  console.log('[AI 상담원] API 원본 응답:', data);
+
+  let reply = '';
+
+  if (data?.content?.[0]?.text) reply = data.content[0].text;
+  else if (typeof data?.content === 'string') reply = data.content;
+  else if (typeof data?.reply === 'string') reply = data.reply;
+  else if (typeof data?.text === 'string') reply = data.text;
+  else if (typeof data?.message === 'string') reply = data.message;
+  else throw new Error('AI 응답 형식을 읽지 못했습니다.');
+
   messages.push({ role: 'assistant', content: reply });
   return reply;
 }
@@ -597,6 +892,7 @@ async function sendMessage() {
 
   isLoading = false;
   document.getElementById('sendBtn').disabled = false;
+  scrollToBottom(true);
 }
 
 async function init() {
@@ -613,7 +909,11 @@ async function init() {
   }
 }
 
-init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
