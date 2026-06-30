@@ -95,7 +95,7 @@ body {
 .chat-area {
   flex: 1; overflow-y: auto;
   min-height: 0;
-  padding: 28px 22px 180px 22px;
+  padding: 28px 22px 260px 22px;
   display: flex; flex-direction: column; gap: 16px;
   width: 100%;
 }
@@ -152,6 +152,7 @@ body {
   border-radius: 18px;
   padding: 26px 26px 22px;
   margin-left: 46px;
+  margin-bottom: 18px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.08);
   position: relative;
   overflow: hidden;
@@ -469,16 +470,17 @@ let isLoading = false;
 
 function scrollToBottom() {
   const area = document.getElementById('chatArea');
+  if (!area) return;
+
   const doScroll = () => {
-    area.scrollTop = area.scrollHeight + 5000;
-    const last = area.lastElementChild;
-    if (last) last.scrollIntoView({ block: 'end' });
+    area.scrollTop = area.scrollHeight;
   };
+
   doScroll();
   requestAnimationFrame(doScroll);
-  setTimeout(doScroll, 50);
-  setTimeout(doScroll, 200);
-  setTimeout(doScroll, 500);
+  setTimeout(doScroll, 80);
+  setTimeout(doScroll, 250);
+  setTimeout(doScroll, 600);
 }
 
 function autoResize(el) {
@@ -493,8 +495,8 @@ function handleKey(e) {
   }
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escapeHtml(str = '') {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function addMessage(role, text) {
@@ -534,8 +536,9 @@ function parseLine(line) {
 
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
+  if (!area || !rawText) return false;
 
-  // 일반 상담 질문은 결과 카드 렌더링 대상이 아님
+  // 일반 상담 질문 답변에는 결과 마커가 없으므로 카드 렌더링하지 않음
   if (
     !rawText.includes('[[SUMMARY_START]]') &&
     !rawText.includes('[[ANALYSIS_START]]')
@@ -543,79 +546,117 @@ function renderResultCards(rawText) {
     return false;
   }
 
-  // 마커 주변에 마크다운 기호(*, #)가 붙어도 인식되도록 느슨하게 매칭
   const summaryMatch = rawText.match(/\[\[\s*SUMMARY_START\s*\]\]([\s\S]*?)\[\[\s*SUMMARY_END\s*\]\]/i);
   const analysisMatch = rawText.match(/\[\[\s*ANALYSIS_START\s*\]\]([\s\S]*?)\[\[\s*ANALYSIS_END\s*\]\]/i);
 
-  let summaryOk = false;
-  let analysisOk = false;
+  let rendered = false;
 
   if (summaryMatch) {
-    const rows = summaryMatch[1].trim().split('\n')
+    const rows = summaryMatch[1]
+      .trim()
+      .split(/\r?\n+/)
       .map(parseLine)
       .filter(Boolean)
       .map(r => ({ label: r.key, value: r.val }));
 
     if (rows.length > 0) {
-      summaryOk = true;
+      rendered = true;
+
       const card = document.createElement('div');
       card.className = 'result-card';
+
       card.innerHTML = `
         <div class="result-title"><span class="badge-icon">📋</span>상담 내용 요약</div>
         <div class="summary-grid">
-          ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
+          ${rows.map(r => `
+            <div class="summary-row">
+              <span class="summary-label">${escapeHtml(r.label)}</span>
+              <span class="summary-value">${escapeHtml(r.value)}</span>
+            </div>
+          `).join('')}
         </div>
       `;
+
       area.appendChild(card);
     }
   }
 
   if (analysisMatch) {
-    const parsed = analysisMatch[1].trim().split('\n')
+    const parsed = analysisMatch[1]
+      .trim()
+      .split(/\r?\n+/)
       .map(parseLine)
       .filter(Boolean);
 
-    let stars = 3, grade = 'B', opinion = '', check = [];
+    let stars = 3;
+    let grade = 'B';
+    let opinion = '';
+    let check = [];
+
     parsed.forEach(({ key, val }) => {
-      const k = key.toUpperCase();
+      const k = key.toUpperCase().trim();
+
       if (k === 'STARS') stars = val;
       else if (k === 'GRADE') grade = val;
       else if (k === 'OPINION') opinion = val;
       else if (k === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
     });
 
-    if (opinion || grade !== 'B' || check.length) {
-      analysisOk = true;
-      const card = document.createElement('div');
-      card.className = 'result-card';
-      card.innerHTML = `
-        <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
-        <div class="summary-grid">
-          <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
-          <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
+    rendered = true;
+
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    card.innerHTML = `
+      <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
+
+      <div class="summary-grid">
+        <div class="summary-row">
+          <span class="summary-label">검토 가능성</span>
+          <span class="summary-value">${starsHtml(stars)}</span>
         </div>
-        <div style="margin-top:20px;">
-          <div class="section-label">검토 의견</div>
-          <div class="opinion-block">${escapeHtml(opinion || '검토 의견을 불러오지 못했습니다.')}</div>
+        <div class="summary-row">
+          <span class="summary-label">상담 난이도</span>
+          <span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span>
         </div>
-        ${check.length ? `
-        <div style="margin-top:18px;">
-          <div class="section-label">추가 확인 사항</div>
-          <div class="check-block"><ul>${check.map(c => `<li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>`).join('')}</ul></div>
-        </div>` : ''}
-        <div class="reserve-banner">
-          무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
-          우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
+      </div>
+
+      <div style="margin-top:20px;">
+        <div class="section-label">검토 의견</div>
+        <div class="opinion-block">${escapeHtml(opinion || '입력된 내용을 기준으로 변호사 상담을 통해 구체적인 검토가 필요합니다.')}</div>
+      </div>
+
+      ${check.length ? `
+      <div style="margin-top:18px;">
+        <div class="section-label">추가 확인 사항</div>
+        <div class="check-block">
+          <ul>
+            ${check.map(c => `
+              <li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>
+            `).join('')}
+          </ul>
         </div>
-      `;
-      area.appendChild(card);
-    }
+      </div>` : ''}
+
+      <div class="reserve-banner">
+        무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
+        우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
+      </div>
+    `;
+
+    area.appendChild(card);
   }
 
-
+  if (rendered) {
+    document.querySelectorAll('.result-spacer').forEach(el => el.remove());
+    const spacer = document.createElement('div');
+    spacer.style.height = '170px';
+    spacer.className = 'result-spacer';
+    area.appendChild(spacer);
+  }
 
   scrollToBottom();
-  return summaryOk || analysisOk;
+  return rendered;
 }
 
 function addChoices(choices) {
@@ -666,8 +707,34 @@ async function callClaude(userMessage) {
     })
   });
 
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    console.error('[AI 상담원] API 오류:', response.status, errText);
+    throw new Error('API 응답 오류: ' + response.status);
+  }
+
   const data = await response.json();
-  const reply = data.content[0].text;
+  console.log('[AI 상담원] API 원본 응답:', data);
+
+  let reply = '';
+
+  if (data?.content?.[0]?.text) {
+    reply = data.content[0].text;
+  } else if (typeof data?.content === 'string') {
+    reply = data.content;
+  } else if (typeof data?.reply === 'string') {
+    reply = data.reply;
+  } else if (typeof data?.text === 'string') {
+    reply = data.text;
+  } else if (typeof data?.message === 'string') {
+    reply = data.message;
+  } else if (data?.error) {
+    console.error('[AI 상담원] API error:', data.error);
+    throw new Error('AI 오류: ' + JSON.stringify(data.error));
+  } else {
+    throw new Error('AI 응답 형식을 읽지 못했습니다.');
+  }
+
   messages.push({ role: 'assistant', content: reply });
   return reply;
 }
@@ -722,7 +789,11 @@ async function init() {
   }
 }
 
-init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
