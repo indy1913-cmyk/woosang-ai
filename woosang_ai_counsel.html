@@ -95,7 +95,7 @@ body {
 .chat-area {
   flex: 1; overflow-y: auto;
   min-height: 0;
-  padding: 28px 22px;
+  padding: 28px 22px 180px 22px;
   display: flex; flex-direction: column; gap: 16px;
   width: 100%;
 }
@@ -493,8 +493,8 @@ function handleKey(e) {
   }
 }
 
-function escapeHtml(str = '') {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function addMessage(role, text) {
@@ -534,6 +534,14 @@ function parseLine(line) {
 
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
+
+  // 일반 상담 질문은 결과 카드 렌더링 대상이 아님
+  if (
+    !rawText.includes('[[SUMMARY_START]]') &&
+    !rawText.includes('[[ANALYSIS_START]]')
+  ) {
+    return false;
+  }
 
   // 마커 주변에 마크다운 기호(*, #)가 붙어도 인식되도록 느슨하게 매칭
   const summaryMatch = rawText.match(/\[\[\s*SUMMARY_START\s*\]\]([\s\S]*?)\[\[\s*SUMMARY_END\s*\]\]/i);
@@ -604,9 +612,7 @@ function renderResultCards(rawText) {
     }
   }
 
-  if (!summaryMatch && !analysisMatch) {
-    console.warn('[AI 상담원] 결과 카드 마커를 찾지 못했습니다. AI 원문:', rawText);
-  }
+
 
   scrollToBottom();
   return summaryOk || analysisOk;
@@ -660,40 +666,8 @@ async function callClaude(userMessage) {
     })
   });
 
-  if (!response.ok) {
-    const errText = await response.text().catch(() => '');
-    console.error('[AI 상담원] API 오류:', response.status, errText);
-    throw new Error('API 응답 오류: ' + response.status);
-  }
-
-  const data = await response.json().catch(err => {
-    console.error('[AI 상담원] JSON 파싱 오류:', err);
-    throw new Error('API 응답을 JSON으로 읽지 못했습니다.');
-  });
-
-  console.log('[AI 상담원] API 원본 응답:', data);
-
-  let reply = '';
-
-  if (data?.content?.[0]?.text) {
-    reply = data.content[0].text;
-  } else if (Array.isArray(data?.content) && data.content[0]?.text) {
-    reply = data.content[0].text;
-  } else if (typeof data?.content === 'string') {
-    reply = data.content;
-  } else if (typeof data?.reply === 'string') {
-    reply = data.reply;
-  } else if (typeof data?.text === 'string') {
-    reply = data.text;
-  } else if (typeof data?.message === 'string') {
-    reply = data.message;
-  } else if (data?.error) {
-    console.error('[AI 상담원] API error:', data.error);
-    throw new Error('AI 오류: ' + JSON.stringify(data.error));
-  } else {
-    throw new Error('AI 응답 형식을 읽지 못했습니다.');
-  }
-
+  const data = await response.json();
+  const reply = data.content[0].text;
   messages.push({ role: 'assistant', content: reply });
   return reply;
 }
@@ -748,11 +722,7 @@ async function init() {
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+init();
 </script>
 </body>
 </html>
