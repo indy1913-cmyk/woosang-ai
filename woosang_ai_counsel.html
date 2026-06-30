@@ -434,9 +434,15 @@ const SYSTEM_PROMPT = `# 역할
 7. 원하는 결과
 
 ---
-# 상담 종료 규칙
-해당 분야의 모든 질문이 끝나면, 다른 말 없이 곧바로 아래 형식을 정확히 지켜서 출력합니다.
+# 상담 종료 규칙 (매우 중요 — 반드시 지킬 것)
+각 분야의 질문 순서에는 마지막 항목이 정해져 있습니다 (예: 개인회생은 "최근 1년 내 신규 대출 여부"가 마지막 항목).
+
+고객이 마지막 항목에 대한 답변을 하면, 당신은 그 답변을 받은 바로 다음 차례에 절대로 "네, 알겠습니다", "감사합니다" 같은 일반 응답을 하지 않습니다.
+마지막 항목 답변을 받자마자 그 즉시 다른 어떤 말도 없이 곧바로 아래 [[SUMMARY_START]]...[[ANALYSIS_END]] 형식을 출력합니다.
+"질문이 모두 끝났습니다" 같은 안내 문구도 출력하지 않고, 곧바로 결과 형식만 출력합니다.
+
 이 출력 형식은 화면에 카드로 자동 렌더링되므로 아래 마커와 구조를 절대 변경하지 않습니다.
+SUMMARY와 ANALYSIS 섹션 내부의 각 줄은 반드시 "항목|값" 형식이어야 하며, 마크다운 표, 별표(**), 콜론(:)을 절대 사용하지 않습니다.
 
 [[SUMMARY_START]]
 항목1|값1
@@ -521,8 +527,23 @@ function starsHtml(n) {
 }
 
 function parseLine(line) {
-  // "항목|값" 또는 "항목: 값" 형식 모두 지원, 앞에 markdown 기호(*, -, 공백)가 있어도 제거
-  let clean = line.replace(/^[\s*\-#>]+/, '').trim();
+  let clean = line.trim();
+  // 마크다운 테이블 구분선(|---|---|) 무시
+  if (/^\|?[\s\-:|]+\|?$/.test(clean) && clean.includes('-')) return null;
+
+  // 마크다운 테이블 행: | 항목 | 값 | 또는 |항목|값|
+  if (clean.startsWith('|')) {
+    const cells = clean.split('|').map(c => c.trim()).filter(c => c.length > 0);
+    if (cells.length >= 2) {
+      const key = cells[0].replace(/\*/g, '').trim();
+      const val = cells[1].replace(/\*/g, '').trim();
+      if (key && !/^항목$|^key$/i.test(key)) return { key, val };
+      return null;
+    }
+  }
+
+  // markdown 기호(*, -, #, >) 제거 후 "항목|값" 또는 "항목: 값" 형식
+  clean = clean.replace(/^[\s*\-#>]+/, '').trim();
   let idx = clean.indexOf('|');
   if (idx === -1) idx = clean.indexOf(':');
   if (idx === -1) return null;
@@ -576,7 +597,7 @@ function renderResultCards(rawText) {
       else if (k === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
     });
 
-    if (opinion || grade !== 'B' || check.length) {
+    if (parsed.length > 0) {
       analysisOk = true;
       const card = document.createElement('div');
       card.className = 'result-card';
@@ -606,6 +627,12 @@ function renderResultCards(rawText) {
 
   if (!summaryMatch && !analysisMatch) {
     console.warn('[AI 상담원] 결과 카드 마커를 찾지 못했습니다. AI 원문:', rawText);
+  }
+  if (summaryMatch && !summaryOk) {
+    console.warn('[AI 상담원] SUMMARY 마커는 찾았지만 항목 파싱 실패. 내부 원문:', summaryMatch[1]);
+  }
+  if (analysisMatch && !analysisOk) {
+    console.warn('[AI 상담원] ANALYSIS 마커는 찾았지만 항목 파싱 실패. 내부 원문:', analysisMatch[1]);
   }
 
   scrollToBottom();
