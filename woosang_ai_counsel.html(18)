@@ -731,9 +731,19 @@ const SYSTEM_PROMPT = `# 역할
 이 출력 형식은 화면에 카드로 자동 렌더링되므로 아래 마커와 구조를 절대 변경하지 않습니다.
 
 [[SUMMARY_START]]
-항목1|값1
-항목2|값2
-(상담 분야에서 수집한 모든 항목을 "항목|값" 형식으로, 줄바꿈으로 구분하여 나열)
+상담분야|선택한 상담 분야
+성명|입력받은 성명
+연락처|입력받은 연락처
+나이|입력받은 나이
+직업|입력받은 직업
+월소득|입력받은 소득
+총채무|입력받은 채무
+채권자수|입력받은 채권자 수
+재산|입력받은 재산
+부양가족|입력받은 부양가족
+연체여부|입력받은 연체 여부
+압류여부|입력받은 압류 여부
+최근대출|입력받은 최근 대출 여부
 [[SUMMARY_END]]
 
 [[ANALYSIS_START]]
@@ -824,49 +834,70 @@ function starsHtml(n) {
   return html;
 }
 
+
 function parseLine(line) {
   if (!line) return null;
-  const clean = String(line).replace(/^[\s*\-#>]+/, '').trim();
+
+  let clean = String(line)
+    .replace(/^[\s*\-#>]+/, '')
+    .replace(/\*\*/g, '')
+    .trim();
+
+  // 안내 문구나 빈 줄 제외
+  if (!clean || clean.startsWith('(') || clean.startsWith('예:')) return null;
 
   let idx = clean.indexOf('|');
   if (idx === -1) idx = clean.indexOf(':');
   if (idx === -1) return null;
 
-  const key = clean.slice(0, idx).replace(/\*/g, '').trim();
-  const val = clean.slice(idx + 1).replace(/\*/g, '').trim();
+  const key = clean.slice(0, idx).trim();
+  const val = clean.slice(idx + 1).trim();
 
-  if (!key) return null;
+  if (!key || !val) return null;
   return { key, val };
+}
+
+function normalizeResultText(rawText) {
+  return String(rawText || '')
+    .replace(/```/g, '')
+    .replace(/\r/g, '')
+    .trim();
+}
+
+function extractBlock(text, startName, endName) {
+  const re = new RegExp('\\[\\[\\s*' + startName + '\\s*\\]\\]([\\s\\S]*?)\\[\\[\\s*' + endName + '\\s*\\]\\]', 'i');
+  const match = text.match(re);
+  return match ? match[1].trim() : '';
 }
 
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
   if (!area || !rawText) return false;
 
+  const text = normalizeResultText(rawText);
+
   if (
-    !rawText.includes('[[SUMMARY_START]]') &&
-    !rawText.includes('[[ANALYSIS_START]]')
+    !text.includes('[[SUMMARY_START]]') &&
+    !text.includes('[[ANALYSIS_START]]')
   ) {
     return false;
   }
 
-  const summaryMatch = rawText.match(/\[\[\s*SUMMARY_START\s*\]\]([\s\S]*?)\[\[\s*SUMMARY_END\s*\]\]/i);
-  const analysisMatch = rawText.match(/\[\[\s*ANALYSIS_START\s*\]\]([\s\S]*?)\[\[\s*ANALYSIS_END\s*\]\]/i);
+  const summaryText = extractBlock(text, 'SUMMARY_START', 'SUMMARY_END');
+  const analysisText = extractBlock(text, 'ANALYSIS_START', 'ANALYSIS_END');
 
   let rendered = false;
 
-  if (summaryMatch) {
-    const rows = summaryMatch[1]
-      .trim()
-      .split(/\r?\n+/)
+  if (summaryText) {
+    const rows = summaryText
+      .split('\n')
       .map(parseLine)
-      .filter(Boolean)
-      .filter(r => r.key && r.val);
+      .filter(Boolean);
+
+    const card = document.createElement('div');
+    card.className = 'result-card';
 
     if (rows.length > 0) {
-      rendered = true;
-      const card = document.createElement('div');
-      card.className = 'result-card';
       card.innerHTML = `
         <div class="result-title">📋 상담 내용 요약</div>
         <div class="summary-grid">
@@ -878,14 +909,22 @@ function renderResultCards(rawText) {
           `).join('')}
         </div>
       `;
-      area.appendChild(card);
+    } else {
+      card.innerHTML = `
+        <div class="result-title">📋 상담 내용 요약</div>
+        <div class="opinion-block">
+          상담 내용 요약을 불러오지 못했습니다. 전화 상담으로 정확히 확인해 주세요.
+        </div>
+      `;
     }
+
+    area.appendChild(card);
+    rendered = true;
   }
 
-  if (analysisMatch) {
-    const parsed = analysisMatch[1]
-      .trim()
-      .split(/\r?\n+/)
+  if (analysisText) {
+    const parsed = analysisText
+      .split('\n')
       .map(parseLine)
       .filter(Boolean);
 
@@ -896,17 +935,21 @@ function renderResultCards(rawText) {
 
     parsed.forEach(({ key, val }) => {
       const k = key.toUpperCase().trim();
+
       if (k === 'STARS') stars = val;
       else if (k === 'GRADE') grade = val;
       else if (k === 'OPINION') opinion = val;
-      else if (k === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
+      else if (k === 'CHECK') {
+        check = val.split(',').map(s => s.trim()).filter(Boolean);
+      }
     });
 
-    rendered = true;
     const card = document.createElement('div');
     card.className = 'result-card';
+
     card.innerHTML = `
       <div class="result-title">⚖️ AI 1차 분석</div>
+
       <div class="summary-grid">
         <div class="summary-row">
           <span class="summary-label">검토 가능성</span>
@@ -936,14 +979,16 @@ function renderResultCards(rawText) {
         우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
       </div>
     `;
+
     area.appendChild(card);
+    rendered = true;
   }
 
   if (rendered) {
     document.querySelectorAll('.result-spacer').forEach(el => el.remove());
     const spacer = document.createElement('div');
     spacer.className = 'result-spacer';
-    spacer.style.height = '170px';
+    spacer.style.height = '180px';
     area.appendChild(spacer);
   }
 
