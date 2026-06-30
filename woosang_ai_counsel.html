@@ -625,13 +625,23 @@ const SYSTEM_PROMPT = `# 역할
 
 ---
 # 상담 종료 규칙
-해당 분야의 모든 질문이 끝나면, 다른 말 없이 곧바로 아래 형식을 정확히 지켜서 출력합니다.
+해당 분야의 모든 질문이 끝나면, 다른 말 없이 곧바로 아래 형식을 정확히 지켜서 출력합니다. 절대로 '항목1|값1' 같은 예시 문구를 그대로 출력하지 말고, 사용자가 실제 입력한 값을 넣어 출력합니다.
 이 출력 형식은 화면에 카드로 자동 렌더링되므로 아래 마커와 구조를 절대 변경하지 않습니다.
 
 [[SUMMARY_START]]
-항목1|값1
-항목2|값2
-(상담 분야에서 수집한 모든 항목을 "항목|값" 형식으로, 줄바꿈으로 구분하여 나열)
+상담분야|실제 선택한 상담 분야
+성명|실제 입력받은 성명
+연락처|실제 입력받은 연락처
+나이|실제 입력받은 나이
+직업|실제 입력받은 직업
+소득|실제 입력받은 소득
+총채무|실제 입력받은 총 채무
+채권자수|실제 입력받은 채권자 수
+재산|실제 입력받은 재산
+부양가족|실제 입력받은 부양가족
+연체여부|실제 입력받은 연체 여부
+압류여부|실제 입력받은 압류 여부
+최근대출|실제 입력받은 최근 대출 여부
 [[SUMMARY_END]]
 
 [[ANALYSIS_START]]
@@ -721,77 +731,160 @@ function starsHtml(n) {
   return html;
 }
 
+function parseResultLine(line) {
+  if (!line) return null;
+
+  let clean = String(line)
+    .replace(/^[\s*\-#>]+/, '')
+    .replace(/\*\*/g, '')
+    .trim();
+
+  if (!clean) return null;
+  if (clean.startsWith('(')) return null;
+  if (clean.includes('항목1|값1') || clean.includes('항목2|값2')) return null;
+
+  let idx = clean.indexOf('|');
+  if (idx === -1) idx = clean.indexOf(':');
+  if (idx === -1) return null;
+
+  const key = clean.slice(0, idx).trim();
+  const val = clean.slice(idx + 1).trim();
+
+  if (!key || !val) return null;
+
+  return { key, val };
+}
+
+function getResultBlock(text, start, end) {
+  const pattern = new RegExp('\\[\\[\\s*' + start + '\\s*\\]\\]([\\s\\S]*?)\\[\\[\\s*' + end + '\\s*\\]\\]', 'i');
+  const match = String(text || '').match(pattern);
+  return match ? match[1].trim() : '';
+}
+
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
+  if (!area || !rawText) return false;
 
-  const summaryMatch = rawText.match(/\[\[SUMMARY_START\]\]([\s\S]*?)\[\[SUMMARY_END\]\]/);
-  const analysisMatch = rawText.match(/\[\[ANALYSIS_START\]\]([\s\S]*?)\[\[ANALYSIS_END\]\]/);
+  const text = String(rawText)
+    .replace(/```html/g, '')
+    .replace(/```/g, '')
+    .replace(/\r/g, '')
+    .trim();
 
-  if (summaryMatch) {
-    const rows = summaryMatch[1].trim().split('\n').filter(Boolean).map(line => {
-      const [label, ...rest] = line.split('|');
-      return { label: (label||'').trim(), value: rest.join('|').trim() };
-    });
+  const summaryText = getResultBlock(text, 'SUMMARY_START', 'SUMMARY_END');
+  const analysisText = getResultBlock(text, 'ANALYSIS_START', 'ANALYSIS_END');
+
+  if (!summaryText && !analysisText) return false;
+
+  let rendered = false;
+
+  if (summaryText) {
+    let rows = summaryText
+      .split('\n')
+      .map(parseResultLine)
+      .filter(Boolean);
+
     const card = document.createElement('div');
     card.className = 'result-card';
+
+    if (rows.length === 0) {
+      rows = [{ key: '상담내용', val: summaryText.replace(/\n+/g, ' / ') }];
+    }
+
     card.innerHTML = `
       <div class="result-title">상담 내용 요약</div>
       <div class="summary-grid">
-        ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
+        ${rows.map(r => `
+          <div class="summary-row">
+            <span class="summary-label">${escapeHtml(r.key)}</span>
+            <span class="summary-value">${escapeHtml(r.val)}</span>
+          </div>
+        `).join('')}
       </div>
     `;
+
     area.appendChild(card);
+    rendered = true;
   }
 
-  if (analysisMatch) {
-    const lines = analysisMatch[1].trim().split('\n').filter(Boolean);
-    let stars = 3, grade = 'B', opinion = '', check = [];
-    lines.forEach(line => {
-      const idx = line.indexOf('|');
-      if (idx === -1) return;
-      const key = line.slice(0, idx).trim();
-      const val = line.slice(idx + 1).trim();
-      if (key === 'STARS') stars = val;
-      else if (key === 'GRADE') grade = val;
-      else if (key === 'OPINION') opinion = val;
-      else if (key === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
+  if (analysisText) {
+    const lines = analysisText
+      .split('\n')
+      .map(parseResultLine)
+      .filter(Boolean);
+
+    let stars = 3;
+    let grade = 'B';
+    let opinion = '';
+    let check = [];
+
+    lines.forEach(({ key, val }) => {
+      const k = key.toUpperCase().trim();
+
+      if (k === 'STARS' || k === '별점') stars = val;
+      else if (k === 'GRADE' || k === '등급') grade = val;
+      else if (k === 'OPINION' || k === '검토의견' || k === '의견') opinion = val;
+      else if (k === 'CHECK' || k === '추가확인사항' || k === '확인사항') {
+        check = val.split(',').map(s => s.trim()).filter(Boolean);
+      }
     });
+
+    if (!opinion) {
+      const nonMeta = lines
+        .filter(({ key }) => !['STARS', 'GRADE', 'CHECK'].includes(key.toUpperCase().trim()))
+        .map(({ key, val }) => `${key}: ${val}`);
+      opinion = nonMeta.join('\n') || '입력된 내용을 기준으로 변호사 상담을 통해 구체적인 검토가 필요합니다.';
+    }
 
     const card = document.createElement('div');
     card.className = 'result-card';
+
     card.innerHTML = `
       <div class="result-title">AI 1차 분석</div>
       <div class="summary-grid">
-        <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
-        <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
+        <div class="summary-row">
+          <span class="summary-label">검토 가능성</span>
+          <span class="summary-value">${starsHtml(stars)}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">상담 난이도</span>
+          <span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span>
+        </div>
       </div>
+
       <div style="margin-top:14px;">
         <div class="summary-label" style="margin-bottom:6px;">검토 의견</div>
-        <div class="opinion-block">${escapeHtml(opinion)}</div>
+        <div class="opinion-block">${formatMessageText(opinion)}</div>
       </div>
+
       ${check.length ? `
       <div style="margin-top:12px;">
         <div class="summary-label" style="margin-bottom:6px;">추가 확인 사항</div>
-        <div class="check-block"><ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></div>
+        <div class="check-block">
+          <ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
+        </div>
       </div>` : ''}
+
       <div class="reserve-banner">
         무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
         우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
       </div>
     `;
+
     area.appendChild(card);
+    rendered = true;
   }
 
-  if (summaryMatch || analysisMatch) {
+  if (rendered) {
     document.querySelectorAll('.result-spacer').forEach(el => el.remove());
     const spacer = document.createElement('div');
     spacer.className = 'result-spacer';
-    spacer.style.height = '180px';
+    spacer.style.height = '190px';
     area.appendChild(spacer);
   }
 
   scrollToBottom(true);
-  return !!(summaryMatch || analysisMatch);
+  return rendered;
 }
 
 function addChoices(choices) {
