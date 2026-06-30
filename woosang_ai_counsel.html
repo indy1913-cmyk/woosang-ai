@@ -13,17 +13,24 @@
   --navy-700: #16305c;
   --navy-600: #1e3f73;
   --gold: #c9a45c;
-  --gold-light: #e0c389;
+  --gold-light: #b8893f;
   --gold-dim: #8a703f;
-  --cream: #f7f4ed;
+  --cream: #fbf8f1;
+  --cream-card: #ffffff;
+  --ivory-border: #e8ddc8;
+  --text-dark: #2a2520;
+  --text-mid: #5c5448;
   --text-light: #e8ecf2;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100vh;
+  overflow: hidden;
+}
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  background: linear-gradient(160deg, var(--navy-900) 0%, var(--navy-800) 100%);
-  min-height: 100vh;
+  background: var(--cream);
   display: flex;
   flex-direction: column;
 }
@@ -67,6 +74,7 @@ body {
 /* 채팅 영역 */
 .chat-area {
   flex: 1; overflow-y: auto;
+  min-height: 0;
   padding: 24px 18px;
   display: flex; flex-direction: column; gap: 14px;
   max-width: 760px; width: 100%; margin: 0 auto;
@@ -92,11 +100,11 @@ body {
   border-radius: 16px; font-size: 14.5px; line-height: 1.7;
 }
 .msg.bot .msg-bubble {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(201,164,92,0.18);
-  color: var(--text-light);
+  background: var(--cream-card);
+  border: 1px solid var(--ivory-border);
+  color: var(--text-dark);
   border-bottom-left-radius: 4px;
-  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 .msg.user .msg-bubble {
   background: linear-gradient(135deg, var(--navy-600), var(--navy-700));
@@ -108,34 +116,34 @@ body {
 /* 선택지 버튼 */
 .choices { display: flex; flex-wrap: wrap; gap: 9px; padding: 4px 0 4px 44px; }
 .choice-btn {
-  background: rgba(201,164,92,0.06);
-  border: 1px solid rgba(201,164,92,0.5);
+  background: var(--cream-card);
+  border: 1.5px solid var(--gold);
   color: var(--gold-light);
   padding: 9px 18px; border-radius: 20px; font-size: 13px;
   cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
-.choice-btn:hover { background: var(--gold); color: var(--navy-900); border-color: var(--gold); }
+.choice-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
 
 /* ===== 결과 카드 (요약 / 분석) ===== */
 .result-card {
   max-width: 100%;
-  background: linear-gradient(155deg, var(--navy-800), var(--navy-900));
-  border: 1px solid rgba(201,164,92,0.3);
+  background: var(--cream-card);
+  border: 1px solid var(--ivory-border);
   border-radius: 16px;
   padding: 22px 22px 18px;
   margin-left: 44px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 .result-card + .result-card { margin-top: 4px; }
 .result-title {
   font-family: 'Noto Serif KR', serif;
-  color: var(--gold-light);
+  color: var(--navy-800);
   font-size: 15px; font-weight: 700;
   letter-spacing: 0.3px;
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(201,164,92,0.22);
+  border-bottom: 1px solid var(--ivory-border);
 }
 .result-title::before { content: ''; width: 4px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block; }
 
@@ -143,15 +151,15 @@ body {
 .summary-row {
   display: flex; justify-content: space-between; gap: 12px;
   padding: 9px 4px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid #f1ece0;
   font-size: 13.5px;
 }
 .summary-row:last-child { border-bottom: none; }
-.summary-label { color: rgba(201,164,92,0.85); font-weight: 500; flex-shrink: 0; min-width: 90px; }
-.summary-value { color: var(--text-light); text-align: right; font-weight: 500; }
+.summary-label { color: var(--text-mid); font-weight: 500; flex-shrink: 0; min-width: 90px; }
+.summary-value { color: var(--text-dark); text-align: right; font-weight: 600; }
 
 .stars { letter-spacing: 2px; font-size: 16px; color: var(--gold); }
-.stars .dim { color: rgba(255,255,255,0.15); }
+.stars .dim { color: #e8ddc8; }
 
 .grade-badge {
   display: inline-flex; align-items: center; justify-content: center;
@@ -159,13 +167,13 @@ body {
   font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 14px;
   border: 1.5px solid var(--gold);
   color: var(--gold-light);
-  background: rgba(201,164,92,0.08);
+  background: #fbf3e2;
 }
 
 .opinion-block, .check-block {
-  font-size: 13.5px; line-height: 1.75; color: var(--text-light);
-  background: rgba(255,255,255,0.02);
-  border-left: 2px solid var(--gold-dim);
+  font-size: 13.5px; line-height: 1.75; color: var(--text-dark);
+  background: #fbf8f1;
+  border-left: 2px solid var(--gold);
   padding: 10px 14px; border-radius: 6px;
   margin-top: 4px;
 }
@@ -174,14 +182,14 @@ body {
 
 .reserve-banner {
   margin-top: 16px; padding: 14px 16px;
-  background: rgba(201,164,92,0.08);
-  border: 1px solid rgba(201,164,92,0.4);
+  background: #fbf3e2;
+  border: 1px solid var(--gold);
   border-radius: 10px;
-  text-align: center; font-size: 13px; color: var(--text-light);
+  text-align: center; font-size: 13px; color: var(--text-dark);
   line-height: 1.7;
 }
-.reserve-banner b { color: var(--gold-light); }
-.reserve-banner a { color: var(--gold-light); text-decoration: none; font-weight: 700; }
+.reserve-banner b { color: var(--navy-800); }
+.reserve-banner a { color: var(--navy-800); text-decoration: none; font-weight: 700; }
 
 /* 입력 영역 */
 .input-area {
