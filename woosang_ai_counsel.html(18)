@@ -334,71 +334,151 @@ body {
 </div>
 
 <script>
-// ===== 분야별 질문 정의 (코드가 직접 순서를 통제) =====
-const FIELDS = {
-  '개인회생': {
-    questions: ['성함이 어떻게 되세요?', '연락처가 어떻게 되시나요?', '나이가 어떻게 되시나요?', '현재 직업이 어떻게 되시나요?', '월 실수령 소득은 어느 정도 되시나요?', '현재 총 채무 금액은 얼마나 되시나요?', '채권자(빚을 지고 있는 곳)는 몇 군데나 되시나요?', '현재 보유하고 계신 재산이 있으신가요? 부동산, 차량, 예금 등이 있으면 말씀해주세요.', '부양가족은 몇 분이나 되시나요?', '현재 채무 연체가 있으신가요?', '혹시 압류가 들어온 것이 있으신가요?', '최근 1년 이내에 새로 대출을 받으신 적이 있으신가요?'],
-    labels: ['성명', '연락처', '나이', '직업', '월 실수령 소득', '총 채무', '채권자 수', '재산', '부양가족', '연체 여부', '압류 여부', '최근 1년 내 신규 대출 여부']
-  },
-  '개인파산': {
-    questions: ['성함이 어떻게 되세요?', '연락처가 어떻게 되시나요?', '나이가 어떻게 되시나요?', '현재 직업이 어떻게 되시나요?', '현재 소득은 어느 정도 되시나요?', '현재 총 채무 금액은 얼마나 되시나요?', '현재 보유하고 계신 재산이 있으신가요?', '부양가족은 몇 분이나 되시나요?', '채무가 발생하게 된 경위를 말씀해주시겠어요?', '최근에 재산을 처분하신 적이 있으신가요?', '최근에 새로 대출을 받으신 적이 있으신가요?', '면책을 받으신 이력이 있으신가요?'],
-    labels: ['성명', '연락처', '나이', '직업', '현재 소득', '총 채무', '재산', '부양가족', '채무 발생 경위', '최근 재산 처분 여부', '최근 대출 여부', '면책 이력']
-  },
-  '민사': {
-    questions: ['어떤 종류의 민사 사건인지 말씀해주시겠어요?', '성함이 어떻게 되세요?', '연락처가 어떻게 되시나요?', '상대방은 어떤 관계이신가요?', '사건 내용을 간단히 말씀해주시겠어요?', '현재 사건 진행 상황은 어떻게 되시나요?', '관련 증거를 가지고 계신가요?', '이번 사건을 통해 원하시는 결과가 어떻게 되시나요?'],
-    labels: ['사건 종류', '성명', '연락처', '상대방', '사건 내용', '진행 상황', '증거 여부', '원하는 결과']
-  },
-  '형사': {
-    questions: ['어떤 종류의 형사 사건인지 말씀해주시겠어요?', '성함이 어떻게 되세요?', '연락처가 어떻게 되시나요?', '사건 내용을 간단히 말씀해주시겠어요?', '현재 사건 진행 단계는 어떻게 되시나요?', '경찰 조사를 받으신 적이 있으신가요?', '관련 증거를 가지고 계신가요?'],
-    labels: ['사건 종류', '성명', '연락처', '사건 내용', '진행 단계', '경찰 조사 여부', '증거 여부']
-  },
-  '이혼·가사': {
-    questions: ['성함이 어떻게 되세요?', '연락처가 어떻게 되시나요?', '혼인 기간이 어떻게 되시나요?', '자녀가 있으신가요?', '재산 분할에 대해 생각하고 계신 부분이 있으신가요?', '양육권에 대해서는 어떻게 생각하고 계신가요?', '이번 상담을 통해 원하시는 결과가 어떻게 되시나요?'],
-    labels: ['성명', '연락처', '혼인 기간', '자녀 여부', '재산 분할', '양육권', '원하는 결과']
-  }
-};
+const SYSTEM_PROMPT = `# 역할
+당신은 우상법률사무소 AI 상담원입니다.
+상담의 목적은 고객의 법률 문제를 접수하고 필요한 정보를 수집하는 것입니다.
+상담 분야는 다음과 같습니다.
+1. 개인회생
+2. 개인파산
+3. 민사
+4. 형사
+5. 이혼·가사
 
-const REACT_SYSTEM_PROMPT = `당신은 우상법률사무소 AI 상담원입니다.
-고객이 방금 한 답변에 대해, 실제 상담 경험이 많은 사람처럼 자연스럽게 공감하거나 리액션하는 말을 "딱 한 문장"만 만들어주세요.
-규칙:
-- 반드시 한 문장만 출력합니다. 질문은 절대 하지 않습니다. 그 다음 질문은 시스템이 별도로 출력하므로 당신은 절대 질문을 만들지 않습니다.
-- "감사합니다"를 기계적으로 반복하지 말고, 상황에 맞게 "네, 알겠습니다", "그러셨군요", "말씀해주셔서 감사합니다", "많이 힘드셨겠네요" 등 자연스럽게 바꿔가며 표현합니다.
-- 답변이 부정적이거나 어려운 상황(연체, 압류, 채무 등)이면 짧은 공감을, 단순 사실(이름, 연락처, 숫자)이면 "네, 확인했습니다" 류의 간단한 응답을 합니다.
-- 절대 두 문장 이상 쓰지 않습니다. 절대 질문하지 않습니다. 절대 추측하거나 법률적 판단을 하지 않습니다.
-- 따옴표나 설명 없이, 응답 문장 자체만 출력합니다.`;
+당신은 변호사가 아니며 법률적 결론을 단정하지 않습니다.
+모든 최종 판단은 반드시 변호사의 상담과 검토를 통해 이루어집니다.
 
-const ANALYSIS_SYSTEM_PROMPT = `당신은 우상법률사무소 AI 상담원입니다. 변호사가 아니며 법률적 결론을 단정하지 않습니다.
-아래 제공되는 상담 내용을 바탕으로, 반드시 다음 형식 그대로 출력합니다. 다른 말은 절대 추가하지 않습니다. 마크다운 표, 별표(**), 콜론(:)을 사용하지 않고 반드시 "항목|값" 형식만 사용합니다.
+---
+# 상담 시작
+대화가 시작되면 반드시 첫 응답으로 아래 문구를 그대로 출력합니다.
+
+안녕하세요.
+우상법률사무소 AI 상담원입니다.
+상담받고 싶은 분야를 선택해주세요.
+① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사
+번호 또는 상담 분야를 입력해주세요.
+
+사용자가 분야를 선택하기 전에는 절대 다른 질문을 진행하지 않습니다.
+
+---
+# 말투 원칙 (중요)
+- 설문조사처럼 딱딱하게 묻지 않습니다. 실제 상담 경험이 많은 사람처럼, 고객의 답변 내용을 짧게 반영(공감/리액션)한 뒤 다음 질문으로 자연스럽게 이어갑니다.
+  예) 고객이 "자영업"이라고 답하면 → "자영업이시군요. 그럼 매달 소득이 일정하지 않으실 수도 있겠네요. 월 평균 실수령 소득은 어느 정도 되시나요?"
+  예) 고객이 "압류당했어요"라고 답하면 → "압류까지 진행된 상황이시면 마음이 많이 무거우셨을 것 같습니다. 혹시 급여, 통장, 부동산 중 어디에 압류가 들어왔는지 여쭤봐도 될까요?"
+- 매 턴마다 "감사합니다."를 기계적으로 반복하지 않습니다. 상황에 맞게 "네, 알겠습니다", "말씀해주셔서 감사합니다", "잘 알겠습니다" 등 자연스럽게 표현을 바꿔가며 답합니다.
+- 공감은 한 문장 이내로 짧게, 과하지 않게 합니다. 상담사답게 차분하고 신뢰감 있는 어조를 유지합니다.
+- 질문은 반드시 한 번에 하나씩만 합니다.
+- 중간 요약은 하지 않습니다.
+- 같은 질문을 반복하지 않습니다.
+- 법률 판단을 단정하지 않습니다.
+- 허위 정보를 만들어내지 않습니다.
+- 추측성 발언을 하지 않습니다.
+- 고객이 감정적으로 격해지거나 불안해해도 차분하고 안정적인 어조를 유지합니다.
+- 개인정보는 상담 목적 범위 내에서만 묻고 사용합니다.
+- 생년월일과 주소는 어떤 분야에서도 절대 질문하지 않습니다.
+
+---
+# 개인회생 상담 순서
+1. 성명
+2. 연락처
+3. 나이
+4. 직업
+5. 월 실수령 소득
+6. 총 채무
+7. 채권자 수
+8. 재산
+9. 부양가족
+10. 연체 여부
+11. 압류 여부
+12. 최근 1년 내 신규 대출 여부
+
+# 개인파산 상담 순서
+1. 성명
+2. 연락처
+3. 나이
+4. 직업
+5. 현재 소득
+6. 총 채무
+7. 재산
+8. 부양가족
+9. 채무 발생 경위
+10. 최근 재산 처분 여부
+11. 최근 대출 여부
+12. 면책 이력
+
+# 민사 상담 순서
+1. 사건 종류 확인
+2. 성명
+3. 연락처
+4. 상대방
+5. 사건 내용
+6. 진행 상황
+7. 증거 여부
+8. 원하는 결과
+
+# 형사 상담 순서
+1. 사건 종류 확인
+2. 성명
+3. 연락처
+4. 사건 내용
+5. 진행 단계
+6. 경찰 조사 여부
+7. 증거 여부
+
+# 이혼·가사 상담 순서
+1. 성명
+2. 연락처
+3. 혼인 기간
+4. 자녀 여부
+5. 재산 분할
+6. 양육권
+7. 원하는 결과
+
+---
+# 상담 종료 규칙
+해당 분야의 모든 질문이 끝나면, 다른 말 없이 곧바로 아래 형식을 정확히 지켜서 출력합니다.
+이 출력 형식은 화면에 카드로 자동 렌더링되므로 아래 마커와 구조를 절대 변경하지 않습니다.
+
+[[SUMMARY_START]]
+항목1|값1
+항목2|값2
+(상담 분야에서 수집한 모든 항목을 "항목|값" 형식으로, 줄바꿈으로 구분하여 나열)
+[[SUMMARY_END]]
 
 [[ANALYSIS_START]]
 STARS|숫자(1~5)
 GRADE|A 또는 B 또는 C
-OPINION|검토 의견을 2~3문장으로 서술. 신중하게 작성하고, 최종 판단은 소득·재산·채무 발생 경위·지출 구조·대출 여부 등을 종합해야 한다는 점을 포함합니다.
-CHECK|추가로 확인이 필요한 사항을 쉼표로 구분하여 나열
-[[ANALYSIS_END]]`;
+OPINION|검토 의견을 2~3문장으로 서술. 현재 입력된 내용만으로 보면 검토 대상일 가능성에 대해 신중하게 언급하고, 최종 판단은 소득·재산·채무 발생 경위·지출 구조·대출 여부 등을 종합해야 한다는 점을 포함.
+CHECK|추가로 확인이 필요한 사항을 쉼표로 구분하여 나열 (예: 채무 발생 경위,재산 처분 여부,대출 내역,가족관계)
+[[ANALYSIS_END]]
 
-let currentField = null;
-let currentStep = -1; // -1: 분야 선택 전
-let answers = [];
+상담 분야가 민사/형사/이혼·가사처럼 회생·파산 검토와 무관한 경우에도 동일한 ANALYSIS 형식을 사용하되, STARS와 GRADE는 사건의 진행 가능성/난이도에 대한 일반적인 판단으로, OPINION은 해당 분야에 맞는 내용으로 작성합니다.
+
+이 형식을 출력한 뒤에는 아무 말도 추가하지 않습니다. 예약 안내는 시스템이 별도로 화면에 표시하므로 직접 출력하지 않습니다.
+
+---
+# 주의사항
+- 법률 판단을 단정하지 않습니다.
+- 허위 정보를 제공하지 않습니다.
+- 추측하지 않습니다.
+- 감정적 대응에도 차분함을 유지합니다.
+- 개인정보는 상담 목적 범위에서만 사용합니다.
+- 최종 판단은 반드시 변호사의 상담과 검토를 통해 이루어진다는 점을 전제로 합니다.`;
+
+let messages = [];
 let isLoading = false;
-
-function detectField(text) {
-  const t = text.replace(/[①②③④⑤\s]/g, '');
-  if (t.includes('개인회생') || t === '1') return '개인회생';
-  if (t.includes('개인파산') || t === '2') return '개인파산';
-  if (t.includes('민사') || t === '3') return '민사';
-  if (t.includes('형사') || t === '4') return '형사';
-  if (t.includes('이혼') || t.includes('가사') || t === '5') return '이혼·가사';
-  return null;
-}
 
 function scrollToBottom() {
   const area = document.getElementById('chatArea');
-  const doScroll = () => { area.scrollTop = area.scrollHeight + 5000; };
+  const doScroll = () => {
+    area.scrollTop = area.scrollHeight + 5000;
+    const last = area.lastElementChild;
+    if (last) last.scrollIntoView({ block: 'end' });
+  };
   doScroll();
   requestAnimationFrame(doScroll);
   setTimeout(doScroll, 50);
   setTimeout(doScroll, 200);
+  setTimeout(doScroll, 500);
 }
 
 function autoResize(el) {
@@ -413,8 +493,8 @@ function handleKey(e) {
   }
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escapeHtml(str = '') {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function addMessage(role, text) {
@@ -441,18 +521,8 @@ function starsHtml(n) {
 }
 
 function parseLine(line) {
-  let clean = line.trim();
-  if (/^\|?[\s\-:|]+\|?$/.test(clean) && clean.includes('-')) return null;
-  if (clean.startsWith('|')) {
-    const cells = clean.split('|').map(c => c.trim()).filter(c => c.length > 0);
-    if (cells.length >= 2) {
-      const key = cells[0].replace(/\*/g, '').trim();
-      const val = cells[1].replace(/\*/g, '').trim();
-      if (key && !/^항목$|^key$/i.test(key)) return { key, val };
-      return null;
-    }
-  }
-  clean = clean.replace(/^[\s*\-#>]+/, '').trim();
+  // "항목|값" 또는 "항목: 값" 형식 모두 지원, 앞에 markdown 기호(*, -, 공백)가 있어도 제거
+  let clean = line.replace(/^[\s*\-#>]+/, '').trim();
   let idx = clean.indexOf('|');
   if (idx === -1) idx = clean.indexOf(':');
   if (idx === -1) return null;
@@ -462,28 +532,42 @@ function parseLine(line) {
   return { key, val };
 }
 
-function renderSummaryCard(field, labels, values) {
+function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
-  const rows = labels.map((label, i) => ({ label, value: values[i] || '-' }));
-  const card = document.createElement('div');
-  card.className = 'result-card';
-  card.innerHTML = `
-    <div class="result-title"><span class="badge-icon">📋</span>상담 내용 요약</div>
-    <div class="summary-grid">
-      ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
-    </div>
-  `;
-  area.appendChild(card);
-  scrollToBottom();
-}
 
-function renderAnalysisCard(rawText) {
-  const area = document.getElementById('chatArea');
+  // 마커 주변에 마크다운 기호(*, #)가 붙어도 인식되도록 느슨하게 매칭
+  const summaryMatch = rawText.match(/\[\[\s*SUMMARY_START\s*\]\]([\s\S]*?)\[\[\s*SUMMARY_END\s*\]\]/i);
   const analysisMatch = rawText.match(/\[\[\s*ANALYSIS_START\s*\]\]([\s\S]*?)\[\[\s*ANALYSIS_END\s*\]\]/i);
 
-  let stars = 3, grade = 'B', opinion = '', check = [];
+  let summaryOk = false;
+  let analysisOk = false;
+
+  if (summaryMatch) {
+    const rows = summaryMatch[1].trim().split('\n')
+      .map(parseLine)
+      .filter(Boolean)
+      .map(r => ({ label: r.key, value: r.val }));
+
+    if (rows.length > 0) {
+      summaryOk = true;
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML = `
+        <div class="result-title"><span class="badge-icon">📋</span>상담 내용 요약</div>
+        <div class="summary-grid">
+          ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
+        </div>
+      `;
+      area.appendChild(card);
+    }
+  }
+
   if (analysisMatch) {
-    const parsed = analysisMatch[1].trim().split('\n').map(parseLine).filter(Boolean);
+    const parsed = analysisMatch[1].trim().split('\n')
+      .map(parseLine)
+      .filter(Boolean);
+
+    let stars = 3, grade = 'B', opinion = '', check = [];
     parsed.forEach(({ key, val }) => {
       const k = key.toUpperCase();
       if (k === 'STARS') stars = val;
@@ -491,35 +575,41 @@ function renderAnalysisCard(rawText) {
       else if (k === 'OPINION') opinion = val;
       else if (k === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
     });
-  }
-  if (!opinion) {
-    opinion = '현재 입력된 내용을 바탕으로 1차 검토가 가능합니다. 정확한 판단을 위해서는 추가 자료 확인과 변호사 상담이 필요합니다.';
+
+    if (opinion || grade !== 'B' || check.length) {
+      analysisOk = true;
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML = `
+        <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
+        <div class="summary-grid">
+          <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
+          <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
+        </div>
+        <div style="margin-top:20px;">
+          <div class="section-label">검토 의견</div>
+          <div class="opinion-block">${escapeHtml(opinion || '검토 의견을 불러오지 못했습니다.')}</div>
+        </div>
+        ${check.length ? `
+        <div style="margin-top:18px;">
+          <div class="section-label">추가 확인 사항</div>
+          <div class="check-block"><ul>${check.map(c => `<li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>`).join('')}</ul></div>
+        </div>` : ''}
+        <div class="reserve-banner">
+          무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
+          우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
+        </div>
+      `;
+      area.appendChild(card);
+    }
   }
 
-  const card = document.createElement('div');
-  card.className = 'result-card';
-  card.innerHTML = `
-    <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
-    <div class="summary-grid">
-      <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
-      <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
-    </div>
-    <div style="margin-top:20px;">
-      <div class="section-label">검토 의견</div>
-      <div class="opinion-block">${escapeHtml(opinion)}</div>
-    </div>
-    ${check.length ? `
-    <div style="margin-top:18px;">
-      <div class="section-label">추가 확인 사항</div>
-      <div class="check-block"><ul>${check.map(c => `<li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>`).join('')}</ul></div>
-    </div>` : ''}
-    <div class="reserve-banner">
-      무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
-      우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
-    </div>
-  `;
-  area.appendChild(card);
+  if (!summaryMatch && !analysisMatch) {
+    console.warn('[AI 상담원] 결과 카드 마커를 찾지 못했습니다. AI 원문:', rawText);
+  }
+
   scrollToBottom();
+  return summaryOk || analysisOk;
 }
 
 function addChoices(choices) {
@@ -556,57 +646,56 @@ function removeTyping() {
   document.getElementById('typing')?.remove();
 }
 
-async function callClaude(systemPrompt, userMessage) {
+async function callClaude(userMessage) {
+  messages.push({ role: 'user', content: userMessage });
+
   const response = await fetch('https://woosang-ai-proxy.indy1913.workers.dev', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }]
+      max_tokens: 1200,
+      system: SYSTEM_PROMPT,
+      messages: messages
     })
   });
-  const data = await response.json();
-  return data.content[0].text.trim();
-}
 
-async function getReaction(userAnswer) {
-  try {
-    return await callClaude(REACT_SYSTEM_PROMPT, `고객 답변: "${userAnswer}"`);
-  } catch (e) {
-    return '네, 알겠습니다.';
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    console.error('[AI 상담원] API 오류:', response.status, errText);
+    throw new Error('API 응답 오류: ' + response.status);
   }
-}
 
-async function getAnalysis(field, labels, values) {
-  const summaryText = labels.map((l, i) => `${l}: ${values[i] || '-'}`).join('\n');
-  try {
-    return await callClaude(ANALYSIS_SYSTEM_PROMPT, `상담 분야: ${field}\n\n${summaryText}\n\n위 내용을 바탕으로 분석 결과를 출력해주세요.`);
-  } catch (e) {
-    return '';
-  }
-}
+  const data = await response.json().catch(err => {
+    console.error('[AI 상담원] JSON 파싱 오류:', err);
+    throw new Error('API 응답을 JSON으로 읽지 못했습니다.');
+  });
 
-async function askNextQuestion() {
-  const field = FIELDS[currentField];
-  currentStep++;
-  if (currentStep < field.questions.length) {
-    showTyping();
-    await new Promise(r => setTimeout(r, 400));
-    removeTyping();
-    addMessage('bot', field.questions[currentStep]);
+  console.log('[AI 상담원] API 원본 응답:', data);
+
+  let reply = '';
+
+  if (data?.content?.[0]?.text) {
+    reply = data.content[0].text;
+  } else if (Array.isArray(data?.content) && data.content[0]?.text) {
+    reply = data.content[0].text;
+  } else if (typeof data?.content === 'string') {
+    reply = data.content;
+  } else if (typeof data?.reply === 'string') {
+    reply = data.reply;
+  } else if (typeof data?.text === 'string') {
+    reply = data.text;
+  } else if (typeof data?.message === 'string') {
+    reply = data.message;
+  } else if (data?.error) {
+    console.error('[AI 상담원] API error:', data.error);
+    throw new Error('AI 오류: ' + JSON.stringify(data.error));
   } else {
-    // 모든 질문 완료 — 결과 출력
-    showTyping();
-    renderSummaryCard(currentField, field.labels, answers);
-    const analysisReply = await getAnalysis(currentField, field.labels, answers);
-    removeTyping();
-    renderAnalysisCard(analysisReply);
-    currentField = null;
-    currentStep = -1;
-    answers = [];
+    throw new Error('AI 응답 형식을 읽지 못했습니다.');
   }
+
+  messages.push({ role: 'assistant', content: reply });
+  return reply;
 }
 
 async function sendMessage() {
@@ -621,35 +710,19 @@ async function sendMessage() {
   document.getElementById('sendBtn').disabled = true;
 
   addMessage('user', text);
+  showTyping();
 
   try {
-    if (currentField === null) {
-      // 분야 선택 단계
-      const field = detectField(text);
-      if (field) {
-        currentField = field;
-        currentStep = -1;
-        answers = [];
-        showTyping();
-        await new Promise(r => setTimeout(r, 400));
-        removeTyping();
-        addMessage('bot', `${field} 상담을 선택하셨군요. 몇 가지 여쭤보겠습니다.`);
-        await askNextQuestion();
-      } else {
-        showTyping();
-        const reply = await getReaction(text) ;
-        removeTyping();
-        addMessage('bot', '죄송합니다, 상담 분야를 다시 한번 선택해주시겠어요?\n① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사');
-        addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
-      }
-    } else {
-      // 질문 응답 단계
-      answers[currentStep] = text;
-      showTyping();
-      const reaction = await getReaction(text);
-      removeTyping();
-      addMessage('bot', reaction);
-      await askNextQuestion();
+    const reply = await callClaude(text);
+    removeTyping();
+
+    const rendered = renderResultCards(reply);
+    if (!rendered) {
+      addMessage('bot', reply);
+    }
+
+    if (messages.length === 2) {
+      addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
     }
   } catch (e) {
     removeTyping();
@@ -661,12 +734,25 @@ async function sendMessage() {
   scrollToBottom();
 }
 
-function init() {
-  addMessage('bot', '안녕하세요.\n우상법률사무소 AI 상담원입니다.\n상담받고 싶은 분야를 선택해주세요.\n① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사\n번호 또는 상담 분야를 입력해주세요.');
-  addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+async function init() {
+  showTyping();
+  try {
+    const reply = await callClaude('시작');
+    removeTyping();
+    addMessage('bot', reply);
+    addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+  } catch(e) {
+    removeTyping();
+    addMessage('bot', '안녕하세요.\n우상법률사무소 AI 상담원입니다.\n상담받고 싶은 분야를 선택해주세요.\n① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사');
+    addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+  }
 }
 
-init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
