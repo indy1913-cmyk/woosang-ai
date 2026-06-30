@@ -437,7 +437,21 @@ const SYSTEM_PROMPT = `# 역할
 # 상담 종료 규칙 (매우 중요 — 반드시 지킬 것)
 각 분야의 질문 순서에는 마지막 항목이 정해져 있습니다 (예: 개인회생은 "최근 1년 내 신규 대출 여부"가 마지막 항목).
 
-고객이 마지막 항목에 대한 답변을 하면, 당신은 그 답변을 받은 바로 다음 차례에 절대로 "네, 알겠습니다", "감사합니다" 같은 일반 응답을 하지 않습니다.
+분야별 마지막 질문을 할 때는, 그 질문 문장 맨 끝에 반드시 `[[LAST_Q]]` 태그를 붙입니다. 이 태그는 화면에 보이지 않게 시스템이 처리하므로, 반드시 정확히 그 형식으로 붙여야 합니다.
+예) "최근 1년 이내에 새로 대출을 받으신 적이 있으신가요?[[LAST_Q]]"
+
+마지막 질문이 아닌 다른 모든 질문에는 절대 `[[LAST_Q]]` 태그를 붙이지 않습니다.
+
+각 분야의 마지막 질문 항목은 다음과 같습니다:
+- 개인회생: 최근 1년 내 신규 대출 여부
+- 개인파산: 면책 이력
+- 민사: 원하는 결과
+- 형사: 증거 여부
+- 이혼·가사: 원하는 결과
+
+당신은 항상 한 번에 하나의 질문만 하며, 모든 응답은 반드시 두 줄로 나눕니다: 첫 줄은 공감/리액션 한 문장, 줄바꿈 후 둘째 줄은 질문 문장. 절대 한 줄로 붙여 쓰지 않습니다.
+
+마지막 항목에 대한 고객의 답변을 받으면, 그 답변을 받은 바로 다음 차례에 절대로 "네, 알겠습니다", "감사합니다" 같은 일반 응답을 하지 않습니다.
 마지막 항목 답변을 받자마자 그 즉시 다른 어떤 말도 없이 곧바로 아래 [[SUMMARY_START]]...[[ANALYSIS_END]] 형식을 출력합니다.
 "질문이 모두 끝났습니다" 같은 안내 문구도 출력하지 않고, 곧바로 결과 형식만 출력합니다.
 
@@ -472,28 +486,7 @@ CHECK|추가로 확인이 필요한 사항을 쉼표로 구분하여 나열 (예
 
 let messages = [];
 let isLoading = false;
-let selectedField = null;
-let userAnswerCount = 0;
-
-// 분야별 질문 항목 개수 (분야 선택 메시지 자체는 제외)
-const FIELD_QUESTION_COUNT = {
-  '개인회생': 12,
-  '개인파산': 12,
-  '민사': 8,
-  '형사': 7,
-  '이혼': 7,
-  '이혼·가사': 7
-};
-
-function detectField(text) {
-  const t = text.replace(/[①②③④⑤\s]/g, '');
-  if (t.includes('개인회생') || t === '1') return '개인회생';
-  if (t.includes('개인파산') || t === '2') return '개인파산';
-  if (t.includes('민사') || t === '3') return '민사';
-  if (t.includes('형사') || t === '4') return '형사';
-  if (t.includes('이혼') || t.includes('가사') || t === '5') return '이혼·가사';
-  return null;
-}
+let nextAnswerIsLast = false;
 
 function scrollToBottom() {
   const area = document.getElementById('chatArea');
@@ -530,12 +523,15 @@ function addMessage(role, text) {
   const div = document.createElement('div');
   div.className = `msg ${role === 'user' ? 'user' : 'bot'}`;
   const avatar = role === 'user' ? '👤' : '⚖️';
+  const hasLastTag = /\[\[LAST_Q\]\]/.test(text);
+  const cleanText = text.replace(/\[\[LAST_Q\]\]/g, '');
   div.innerHTML = `
     <div class="msg-avatar">${avatar}</div>
-    <div class="msg-bubble">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+    <div class="msg-bubble">${escapeHtml(cleanText).replace(/\n/g, '<br>')}</div>
   `;
   area.appendChild(div);
   scrollToBottom();
+  return hasLastTag;
 }
 
 function starsHtml(n) {
@@ -575,7 +571,7 @@ function parseLine(line) {
   return { key, val };
 }
 
-function renderResultCards(rawText) {
+function renderResultCards(rawText, expectMarker) {
   const area = document.getElementById('chatArea');
 
   // 마커 주변에 마크다운 기호(*, #)가 붙어도 인식되도록 느슨하게 매칭
@@ -647,14 +643,16 @@ function renderResultCards(rawText) {
     }
   }
 
-  if (!summaryMatch && !analysisMatch) {
-    console.warn('[AI 상담원] 결과 카드 마커를 찾지 못했습니다. AI 원문:', rawText);
-  }
-  if (summaryMatch && !summaryOk) {
-    console.warn('[AI 상담원] SUMMARY 마커는 찾았지만 항목 파싱 실패. 내부 원문:', summaryMatch[1]);
-  }
-  if (analysisMatch && !analysisOk) {
-    console.warn('[AI 상담원] ANALYSIS 마커는 찾았지만 항목 파싱 실패. 내부 원문:', analysisMatch[1]);
+  if (expectMarker) {
+    if (!summaryMatch && !analysisMatch) {
+      console.warn('[AI 상담원] 결과 카드 마커를 찾지 못했습니다. AI 원문:', rawText);
+    }
+    if (summaryMatch && !summaryOk) {
+      console.warn('[AI 상담원] SUMMARY 마커는 찾았지만 항목 파싱 실패. 내부 원문:', summaryMatch[1]);
+    }
+    if (analysisMatch && !analysisOk) {
+      console.warn('[AI 상담원] ANALYSIS 마커는 찾았지만 항목 파싱 실패. 내부 원문:', analysisMatch[1]);
+    }
   }
 
   scrollToBottom();
@@ -729,40 +727,27 @@ async function sendMessage() {
   addMessage('user', text);
   showTyping();
 
-  try {
-    // 분야 선택 메시지인지 먼저 확인 (아직 분야가 정해지지 않은 첫 응답)
-    if (!selectedField) {
-      const field = detectField(text);
-      if (field) {
-        selectedField = field;
-        userAnswerCount = 0;
-      }
-    } else {
-      userAnswerCount++;
-    }
+  // 직전 AI 질문에 [[LAST_Q]] 태그가 붙어있었다면, 지금 들어온 답변이 마지막 답변
+  const wasLastQuestion = nextAnswerIsLast;
+  nextAnswerIsLast = false;
 
+  try {
     let reply = await callClaude(text);
     removeTyping();
 
-    const totalQuestions = selectedField ? (FIELD_QUESTION_COUNT[selectedField] || 99) : 99;
-    const isLastAnswer = selectedField && userAnswerCount >= totalQuestions;
-
     let rendered = renderResultCards(reply);
 
-    if (isLastAnswer && !rendered) {
-      // 마지막 항목 답변을 받은 상황 — AI 판단에 맡기지 않고 결과 출력을 직접 강제 요청
+    if (wasLastQuestion && !rendered) {
+      // 마지막 질문에 대한 답변인데 결과가 안 나왔다면, 결과 출력을 직접 강제 요청
       showTyping();
-      reply = await callClaude('방금 답변이 이 분야의 마지막 질문 항목입니다. 더 이상 질문하지 말고, 지금 즉시 시스템 프롬프트에 정의된 [[SUMMARY_START]]...[[ANALYSIS_END]] 형식으로 상담 결과를 출력해주세요. 다른 말은 일절 추가하지 마세요.');
+      reply = await callClaude('방금 답변이 이 분야의 마지막 질문 항목에 대한 답변입니다. 더 이상 질문하지 말고, 지금 즉시 [[SUMMARY_START]]...[[ANALYSIS_END]] 형식으로 상담 결과를 출력해주세요. 다른 말은 일절 추가하지 마세요.');
       removeTyping();
-      rendered = renderResultCards(reply);
+      rendered = renderResultCards(reply, true);
     }
 
     if (!rendered) {
-      addMessage('bot', reply);
-    } else {
-      // 결과가 정상 출력됐으면 분야/카운트 초기화 (다음 상담 대비)
-      selectedField = null;
-      userAnswerCount = 0;
+      const hasLastTag = addMessage('bot', reply);
+      if (hasLastTag) nextAnswerIsLast = true;
     }
 
     if (messages.length === 2) {
