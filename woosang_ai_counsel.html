@@ -23,10 +23,13 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body {
+html, body {
   font-family: 'Noto Sans KR', sans-serif;
   background: var(--cream);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+body {
   display: flex;
   flex-direction: column;
 }
@@ -123,71 +126,105 @@ body {
   max-width: 100%;
   background: var(--cream-card);
   border: 1px solid var(--ivory-border);
-  border-radius: 16px;
-  padding: 24px 24px 20px;
+  border-radius: 18px;
+  padding: 26px 26px 22px;
   margin-left: 46px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
 }
-.result-card + .result-card { margin-top: 4px; }
+.result-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--navy-700), var(--gold));
+}
+.result-card + .result-card { margin-top: 6px; }
 .result-title {
   font-family: 'Noto Serif KR', serif;
   color: var(--navy-800);
-  font-size: 17px; font-weight: 700;
+  font-size: 18px; font-weight: 700;
   letter-spacing: 0.3px;
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--ivory-border);
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #f1ece0;
 }
-.result-title::before { content: ''; width: 4px; height: 15px; background: var(--gold); border-radius: 2px; display: inline-block; }
+.result-title .badge-icon {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-800));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
 
-.summary-grid { display: flex; flex-direction: column; gap: 6px; }
+.summary-grid { display: flex; flex-direction: column; gap: 2px; }
 .summary-row {
-  display: flex; justify-content: space-between; gap: 12px;
-  padding: 10px 4px;
-  border-bottom: 1px solid #f1ece0;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
   font-size: 15px;
+  transition: background 0.15s;
 }
-.summary-row:last-child { border-bottom: none; }
+.summary-row:nth-child(odd) { background: #fbf9f4; }
 .summary-label { color: var(--text-mid); font-weight: 500; flex-shrink: 0; min-width: 100px; }
-.summary-value { color: var(--text-dark); text-align: right; font-weight: 600; }
+.summary-value { color: var(--navy-800); text-align: right; font-weight: 700; font-size: 15.5px; }
 
-.stars { letter-spacing: 2px; font-size: 18px; color: var(--gold); }
+.stars { letter-spacing: 3px; font-size: 21px; color: var(--gold); }
 .stars .dim { color: #e8ddc8; }
 
 .grade-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: 50%;
-  font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 15px;
-  border: 1.5px solid var(--gold);
-  color: var(--gold-light);
-  background: #fbf3e2;
+  width: 38px; height: 38px; border-radius: 50%;
+  font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 17px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(184,137,63,0.35);
 }
 
-.opinion-block, .check-block {
-  font-size: 15px; line-height: 1.8; color: var(--text-dark);
-  background: #fbf8f1;
-  border-left: 3px solid var(--gold);
-  padding: 12px 16px; border-radius: 6px;
+.section-label {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700; color: var(--navy-800); font-size: 14.5px;
+  margin-bottom: 10px;
+}
+.section-label::before {
+  content: ''; width: 4px; height: 14px; background: var(--gold); border-radius: 2px;
+}
+
+.opinion-block {
+  font-size: 15.5px; line-height: 1.85; color: var(--text-dark);
+  background: linear-gradient(135deg, #fbf8f1, #fdf6e9);
+  border: 1px solid #ecdfc0;
+  padding: 16px 18px; border-radius: 12px;
   margin-top: 4px;
 }
-.check-block ul { padding-left: 18px; margin-top: 4px; }
-.check-block li { margin-bottom: 4px; }
+.check-block {
+  font-size: 15px; line-height: 1.8; color: var(--text-dark);
+  margin-top: 4px;
+}
+.check-block ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.check-block li {
+  display: flex; align-items: center; gap: 10px;
+  background: #fbf9f4; padding: 10px 14px; border-radius: 10px;
+  border-left: 3px solid var(--gold);
+}
 
 .reserve-banner {
-  margin-top: 18px; padding: 16px 18px;
-  background: #fbf3e2;
-  border: 1px solid var(--gold);
-  border-radius: 10px;
-  text-align: center; font-size: 15px; color: var(--text-dark);
-  line-height: 1.8;
+  margin-top: 20px; padding: 18px 20px;
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+  border-radius: 14px;
+  text-align: center; font-size: 15px; color: #fff;
+  line-height: 1.85;
+  box-shadow: 0 6px 16px rgba(15,33,66,0.25);
 }
-.reserve-banner b { color: var(--navy-800); }
-.reserve-banner a { color: var(--navy-800); text-decoration: none; font-weight: 700; }
+.reserve-banner b { color: #f0dba8; font-size: 16px; }
+.reserve-banner a { color: #f0dba8; text-decoration: none; font-weight: 700; }
 
 /* 입력 영역 */
+.input-wrapper {
+  background: var(--navy-900);
+  border-top: 1px solid rgba(201,164,92,0.25);
+}
 .input-area {
-  background: var(--navy-800);
+  background: transparent;
   padding: 16px 18px;
   display: flex; gap: 10px; align-items: flex-end;
   max-width: 780px; width: 100%; margin: 0 auto;
@@ -230,6 +267,7 @@ body {
   color: #fff;
   text-align: center; padding: 12px;
   font-size: 14px;
+  border-top: 1px solid rgba(201,164,92,0.15);
 }
 .call-bar a { color: #f0dba8; text-decoration: none; font-weight: 700; }
 
@@ -257,9 +295,11 @@ body {
   📞 전화 상담 <a href="tel:02-927-9665">02-927-9665</a> | 평일 09:00 ~ 18:00
 </div>
 
-<div class="input-area">
-  <textarea id="userInput" placeholder="메시지를 입력하세요..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-  <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+<div class="input-wrapper">
+  <div class="input-area">
+    <textarea id="userInput" placeholder="메시지를 입력하세요..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
 </div>
 
 <div class="footer">※ AI 상담 결과는 참고용이며, 최종 판단은 반드시 변호사 상담 후 결정됩니다.</div>
@@ -400,9 +440,11 @@ let isLoading = false;
 
 function scrollToBottom() {
   const area = document.getElementById('chatArea');
-  requestAnimationFrame(() => {
-    area.scrollTop = area.scrollHeight + 1000;
-  });
+  const doScroll = () => { area.scrollTop = area.scrollHeight + 2000; };
+  doScroll();
+  requestAnimationFrame(doScroll);
+  setTimeout(doScroll, 50);
+  setTimeout(doScroll, 200);
 }
 
 function autoResize(el) {
@@ -458,7 +500,7 @@ function renderResultCards(rawText) {
     const card = document.createElement('div');
     card.className = 'result-card';
     card.innerHTML = `
-      <div class="result-title">상담 내용 요약</div>
+      <div class="result-title"><span class="badge-icon">📋</span>상담 내용 요약</div>
       <div class="summary-grid">
         ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
       </div>
@@ -483,19 +525,19 @@ function renderResultCards(rawText) {
     const card = document.createElement('div');
     card.className = 'result-card';
     card.innerHTML = `
-      <div class="result-title">AI 1차 분석</div>
+      <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
       <div class="summary-grid">
         <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
         <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
       </div>
-      <div style="margin-top:16px;">
-        <div class="summary-label" style="margin-bottom:8px;">검토 의견</div>
+      <div style="margin-top:20px;">
+        <div class="section-label">검토 의견</div>
         <div class="opinion-block">${escapeHtml(opinion)}</div>
       </div>
       ${check.length ? `
-      <div style="margin-top:14px;">
-        <div class="summary-label" style="margin-bottom:8px;">추가 확인 사항</div>
-        <div class="check-block"><ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></div>
+      <div style="margin-top:18px;">
+        <div class="section-label">추가 확인 사항</div>
+        <div class="check-block"><ul>${check.map(c => `<li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>`).join('')}</ul></div>
       </div>` : ''}
       <div class="reserve-banner">
         무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
