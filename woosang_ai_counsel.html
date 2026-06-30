@@ -472,6 +472,28 @@ CHECK|추가로 확인이 필요한 사항을 쉼표로 구분하여 나열 (예
 
 let messages = [];
 let isLoading = false;
+let selectedField = null;
+let userAnswerCount = 0;
+
+// 분야별 질문 항목 개수 (분야 선택 메시지 자체는 제외)
+const FIELD_QUESTION_COUNT = {
+  '개인회생': 12,
+  '개인파산': 12,
+  '민사': 8,
+  '형사': 7,
+  '이혼': 7,
+  '이혼·가사': 7
+};
+
+function detectField(text) {
+  const t = text.replace(/[①②③④⑤\s]/g, '');
+  if (t.includes('개인회생') || t === '1') return '개인회생';
+  if (t.includes('개인파산') || t === '2') return '개인파산';
+  if (t.includes('민사') || t === '3') return '민사';
+  if (t.includes('형사') || t === '4') return '형사';
+  if (t.includes('이혼') || t.includes('가사') || t === '5') return '이혼·가사';
+  return null;
+}
 
 function scrollToBottom() {
   const area = document.getElementById('chatArea');
@@ -708,12 +730,39 @@ async function sendMessage() {
   showTyping();
 
   try {
-    const reply = await callClaude(text);
+    // 분야 선택 메시지인지 먼저 확인 (아직 분야가 정해지지 않은 첫 응답)
+    if (!selectedField) {
+      const field = detectField(text);
+      if (field) {
+        selectedField = field;
+        userAnswerCount = 0;
+      }
+    } else {
+      userAnswerCount++;
+    }
+
+    let reply = await callClaude(text);
     removeTyping();
 
-    const rendered = renderResultCards(reply);
+    const totalQuestions = selectedField ? (FIELD_QUESTION_COUNT[selectedField] || 99) : 99;
+    const isLastAnswer = selectedField && userAnswerCount >= totalQuestions;
+
+    let rendered = renderResultCards(reply);
+
+    if (isLastAnswer && !rendered) {
+      // 마지막 항목 답변을 받은 상황 — AI 판단에 맡기지 않고 결과 출력을 직접 강제 요청
+      showTyping();
+      reply = await callClaude('방금 답변이 이 분야의 마지막 질문 항목입니다. 더 이상 질문하지 말고, 지금 즉시 시스템 프롬프트에 정의된 [[SUMMARY_START]]...[[ANALYSIS_END]] 형식으로 상담 결과를 출력해주세요. 다른 말은 일절 추가하지 마세요.');
+      removeTyping();
+      rendered = renderResultCards(reply);
+    }
+
     if (!rendered) {
       addMessage('bot', reply);
+    } else {
+      // 결과가 정상 출력됐으면 분야/카운트 초기화 (다음 상담 대비)
+      selectedField = null;
+      userAnswerCount = 0;
     }
 
     if (messages.length === 2) {
