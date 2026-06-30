@@ -520,69 +520,96 @@ function starsHtml(n) {
   return html;
 }
 
+function parseLine(line) {
+  // "항목|값" 또는 "항목: 값" 형식 모두 지원, 앞에 markdown 기호(*, -, 공백)가 있어도 제거
+  let clean = line.replace(/^[\s*\-#>]+/, '').trim();
+  let idx = clean.indexOf('|');
+  if (idx === -1) idx = clean.indexOf(':');
+  if (idx === -1) return null;
+  const key = clean.slice(0, idx).replace(/\*/g, '').trim();
+  const val = clean.slice(idx + 1).replace(/\*/g, '').trim();
+  if (!key) return null;
+  return { key, val };
+}
+
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
 
-  const summaryMatch = rawText.match(/\[\[SUMMARY_START\]\]([\s\S]*?)\[\[SUMMARY_END\]\]/);
-  const analysisMatch = rawText.match(/\[\[ANALYSIS_START\]\]([\s\S]*?)\[\[ANALYSIS_END\]\]/);
+  // 마커 주변에 마크다운 기호(*, #)가 붙어도 인식되도록 느슨하게 매칭
+  const summaryMatch = rawText.match(/\[\[\s*SUMMARY_START\s*\]\]([\s\S]*?)\[\[\s*SUMMARY_END\s*\]\]/i);
+  const analysisMatch = rawText.match(/\[\[\s*ANALYSIS_START\s*\]\]([\s\S]*?)\[\[\s*ANALYSIS_END\s*\]\]/i);
+
+  let summaryOk = false;
+  let analysisOk = false;
 
   if (summaryMatch) {
-    const rows = summaryMatch[1].trim().split('\n').filter(Boolean).map(line => {
-      const [label, ...rest] = line.split('|');
-      return { label: (label||'').trim(), value: rest.join('|').trim() };
-    });
-    const card = document.createElement('div');
-    card.className = 'result-card';
-    card.innerHTML = `
-      <div class="result-title"><span class="badge-icon">📋</span>상담 내용 요약</div>
-      <div class="summary-grid">
-        ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
-      </div>
-    `;
-    area.appendChild(card);
+    const rows = summaryMatch[1].trim().split('\n')
+      .map(parseLine)
+      .filter(Boolean)
+      .map(r => ({ label: r.key, value: r.val }));
+
+    if (rows.length > 0) {
+      summaryOk = true;
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML = `
+        <div class="result-title"><span class="badge-icon">📋</span>상담 내용 요약</div>
+        <div class="summary-grid">
+          ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
+        </div>
+      `;
+      area.appendChild(card);
+    }
   }
 
   if (analysisMatch) {
-    const lines = analysisMatch[1].trim().split('\n').filter(Boolean);
+    const parsed = analysisMatch[1].trim().split('\n')
+      .map(parseLine)
+      .filter(Boolean);
+
     let stars = 3, grade = 'B', opinion = '', check = [];
-    lines.forEach(line => {
-      const idx = line.indexOf('|');
-      if (idx === -1) return;
-      const key = line.slice(0, idx).trim();
-      const val = line.slice(idx + 1).trim();
-      if (key === 'STARS') stars = val;
-      else if (key === 'GRADE') grade = val;
-      else if (key === 'OPINION') opinion = val;
-      else if (key === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
+    parsed.forEach(({ key, val }) => {
+      const k = key.toUpperCase();
+      if (k === 'STARS') stars = val;
+      else if (k === 'GRADE') grade = val;
+      else if (k === 'OPINION') opinion = val;
+      else if (k === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
     });
 
-    const card = document.createElement('div');
-    card.className = 'result-card';
-    card.innerHTML = `
-      <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
-      <div class="summary-grid">
-        <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
-        <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
-      </div>
-      <div style="margin-top:20px;">
-        <div class="section-label">검토 의견</div>
-        <div class="opinion-block">${escapeHtml(opinion)}</div>
-      </div>
-      ${check.length ? `
-      <div style="margin-top:18px;">
-        <div class="section-label">추가 확인 사항</div>
-        <div class="check-block"><ul>${check.map(c => `<li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>`).join('')}</ul></div>
-      </div>` : ''}
-      <div class="reserve-banner">
-        무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
-        우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
-      </div>
-    `;
-    area.appendChild(card);
+    if (opinion || grade !== 'B' || check.length) {
+      analysisOk = true;
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML = `
+        <div class="result-title"><span class="badge-icon">⚖️</span>AI 1차 분석</div>
+        <div class="summary-grid">
+          <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
+          <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
+        </div>
+        <div style="margin-top:20px;">
+          <div class="section-label">검토 의견</div>
+          <div class="opinion-block">${escapeHtml(opinion || '검토 의견을 불러오지 못했습니다.')}</div>
+        </div>
+        ${check.length ? `
+        <div style="margin-top:18px;">
+          <div class="section-label">추가 확인 사항</div>
+          <div class="check-block"><ul>${check.map(c => `<li><span style="color:var(--gold); font-weight:700;">✓</span>${escapeHtml(c)}</li>`).join('')}</ul></div>
+        </div>` : ''}
+        <div class="reserve-banner">
+          무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
+          우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
+        </div>
+      `;
+      area.appendChild(card);
+    }
+  }
+
+  if (!summaryMatch && !analysisMatch) {
+    console.warn('[AI 상담원] 결과 카드 마커를 찾지 못했습니다. AI 원문:', rawText);
   }
 
   scrollToBottom();
-  return !!(summaryMatch || analysisMatch);
+  return summaryOk || analysisOk;
 }
 
 function addChoices(choices) {
