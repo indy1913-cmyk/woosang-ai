@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우상법률사무소 AI 상담원</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root {
+  --navy-900: #0a1628;
+  --navy-800: #0f2142;
+  --navy-700: #16305c;
+  --navy-600: #1e3f73;
+  --gold: #c9a45c;
+  --gold-light: #b8893f;
+  --gold-dim: #8a703f;
+  --cream: #fbf8f1;
+  --cream-card: #ffffff;
+  --ivory-border: #e8ddc8;
+  --text-dark: #2a2520;
+  --text-mid: #5c5448;
+  --text-light: #e8ecf2;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100vh;
+  overflow: hidden;
+}
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: radial-gradient(circle at 20% 10%, #fdf6e8 0%, #f3e9d6 45%, #ede0c8 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;
+  padding: 18px;
+}
+.app-inner {
+  width: 100%;
+  max-width: 1000px;
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 16px 50px rgba(120,90,40,0.16);
+}
+
+/* 헤더 */
+.header {
+  background: var(--cream);
+  color: var(--text-dark);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--ivory-border);
+}
+.header-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-900));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 0 2px var(--gold);
+}
+.header-info h1 {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 18px; font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--navy-800);
+}
+.header-info p { font-size: 12px; color: var(--text-mid); margin-top: 3px; letter-spacing: 0.2px; }
+.online-badge {
+  margin-left: auto;
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.45);
+  color: #16a34a;
+  font-size: 11px; font-weight: 500;
+  padding: 5px 12px; border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* 채팅 영역 */
+.chat-area {
+  flex: 1; overflow-y: auto;
+  min-height: 0;
+  padding: 24px 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  width: 100%;
+}
+.chat-area::-webkit-scrollbar { width: 6px; }
+.chat-area::-webkit-scrollbar-thumb { background: rgba(201,164,92,0.3); border-radius: 10px; }
+
+/* 메시지 */
+.msg { display: flex; gap: 10px; align-items: flex-end; }
+.msg.user { flex-direction: row-reverse; }
+.msg-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.msg.bot .msg-avatar {
+  background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold-dim));
+  box-shadow: 0 0 0 1px rgba(201,164,92,0.35);
+}
+.msg.user .msg-avatar { background: var(--navy-600); }
+.msg-bubble {
+  max-width: 78%; padding: 16px 20px;
+  border-radius: 16px; font-size: 16.5px; line-height: 1.8;
+}
+.msg-bubble p { margin: 0; }
+.msg-bubble p + p { margin-top: 10px; }
+.msg.bot .msg-bubble {
+  background: var(--cream-card);
+  border: 1px solid var(--ivory-border);
+  color: var(--text-dark);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.msg.user .msg-bubble {
+  background: linear-gradient(135deg, var(--navy-600), var(--navy-700));
+  color: #fff;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+/* 선택지 버튼 */
+.choices { display: flex; flex-wrap: wrap; gap: 9px; padding: 4px 0 4px 44px; }
+.choice-btn {
+  background: var(--cream-card);
+  border: 1.5px solid var(--gold);
+  color: var(--navy-800);
+  padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.choice-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+/* ===== 결과 카드 (요약 / 분석) ===== */
+.result-card {
+  max-width: 100%;
+  background: var(--cream-card);
+  border: 1px solid var(--ivory-border);
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  margin-left: 44px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.result-card + .result-card { margin-top: 4px; }
+.result-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--navy-800);
+  font-size: 15px; font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ivory-border);
+}
+.result-title::before { content: ''; width: 4px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block; }
+
+.summary-grid { display: flex; flex-direction: column; gap: 6px; }
+.summary-row {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid #f1ece0;
+  font-size: 15px;
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-label { color: var(--text-mid); font-weight: 500; flex-shrink: 0; min-width: 100px; }
+.summary-value { color: var(--text-dark); text-align: right; font-weight: 600; }
+
+.stars { letter-spacing: 2px; font-size: 18px; color: var(--gold); }
+.stars .dim { color: #e8ddc8; }
+
+.grade-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 16px;
+  border: 1.5px solid var(--gold);
+  color: var(--gold-light);
+  background: #fbf3e2;
+}
+
+.opinion-block, .check-block {
+  font-size: 15px; line-height: 1.85; color: var(--text-dark);
+  background: #fbf8f1;
+  border-left: 2px solid var(--gold);
+  padding: 12px 16px; border-radius: 6px;
+  margin-top: 4px;
+}
+.check-block ul { padding-left: 18px; margin-top: 4px; }
+.check-block li { margin-bottom: 3px; }
+
+.reserve-banner {
+  margin-top: 16px; padding: 14px 16px;
+  background: #fbf3e2;
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  text-align: center; font-size: 13px; color: var(--text-dark);
+  line-height: 1.7;
+}
+.reserve-banner b { color: var(--navy-800); }
+.reserve-banner a { color: var(--navy-800); text-decoration: none; font-weight: 700; }
+
+
+
+.privacy-notice {
+  margin: 8px 0 4px 44px;
+  max-width: calc(100% - 44px);
+  background: #fffdf8;
+  border: 1px dashed var(--gold);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text-mid);
+}
+.privacy-notice b { color: var(--navy-800); }
+@media (max-width: 480px) {
+  .privacy-notice { margin-left: 0; max-width: 100%; font-size: 11.5px; }
+}
+
+/* 입력 영역 */
+.input-area {
+  background: var(--cream-card);
+  padding: 16px 20px;
+  border-top: 1px solid var(--ivory-border);
+  display: flex; gap: 10px; align-items: flex-end;
+  width: 100%;
+}
+.input-area textarea {
+  flex: 1;
+  background: var(--cream-card);
+  border: 1.5px solid var(--ivory-border);
+  border-radius: 30px; padding: 14px 22px;
+  font-size: 16px; resize: none; outline: none;
+  font-family: inherit; max-height: 100px;
+  color: var(--text-dark);
+  transition: border-color 0.2s;
+}
+.input-area textarea::placeholder { color: #b5ac9a; }
+.input-area textarea:focus { border-color: var(--gold); }
+.send-btn {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-900));
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(15,33,66,0.3);
+}
+.send-btn:hover { transform: scale(1.05); }
+.send-btn:disabled { background: #c9c2b0; cursor: not-allowed; box-shadow: none; }
+
+/* 타이핑 */
+.typing { display: flex; gap: 5px; align-items: center; padding: 12px 16px; }
+.typing span { width: 7px; height: 7px; background: var(--gold-dim); border-radius: 50%; animation: bounce 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+/* 전화 바 */
+.call-bar {
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+  color: #fff;
+  text-align: center; padding: 13px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.call-bar a {
+  color: var(--navy-900);
+  text-decoration: none; font-weight: 700;
+  background: rgba(255,255,255,0.5);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.footer {
+  background: var(--cream-card);
+  padding: 9px; text-align: center;
+  font-size: 10.5px; color: var(--text-mid);
+}
+
+/* 모바일 대응 */
+@media (max-width: 480px) {
+  .header { padding: 14px 16px; gap: 10px; }
+  .header-icon { width: 38px; height: 38px; font-size: 18px; }
+  .header-info h1 { font-size: 15px; }
+  .header-info p { font-size: 10px; }
+  .online-badge { font-size: 10px; padding: 4px 8px; }
+  .chat-area { padding: 16px 10px; gap: 10px; }
+  .msg-bubble { max-width: 85%; font-size: 14px; padding: 11px 14px; }
+  .result-card { margin-left: 0; padding: 16px; }
+  .choices { padding: 4px 0; }
+  .input-area textarea { font-size: 16px; }
+  .call-bar { font-size: 12px; padding: 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+<div class="app-inner">
+
+<div class="header">
+  <div class="header-icon">⚖️</div>
+  <div class="header-info">
+    <h1>우상법률사무소 AI 상담원</h1>
+    <p>개인회생 · 파산 · 민사 · 형사 · 이혼 · 가사</p>
+  </div>
+  
+</div>
+
+<div class="chat-area" id="chatArea"></div>
+
+<div class="call-bar">
+  📞 전화 상담 <a href="tel:02-927-9665">02-927-9665</a> | 평일 09:00 ~ 18:00
+</div>
+
+<div class="input-area">
+  <textarea id="userInput" placeholder="메시지를 입력하세요..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+  <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+</div>
+
+<div class="footer">※ AI 상담 결과는 참고용이며, 최종 판단은 반드시 변호사 상담 후 결정됩니다.</div>
+
+</div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `# 역할
+당신은 우상법률사무소 AI 상담원입니다.
+상담의 목적은 고객의 법률 문제를 접수하고 필요한 정보를 수집하는 것입니다.
+상담 분야는 다음과 같습니다.
+1. 개인회생
+2. 개인파산
+3. 민사
+4. 형사
+5. 이혼·가사
+
+당신은 변호사가 아니며 법률적 결론을 단정하지 않습니다.
+모든 최종 판단은 반드시 변호사의 상담과 검토를 통해 이루어집니다.
+
+---
+# 상담 시작
+대화가 시작되면 반드시 첫 응답으로 아래 문구를 그대로 출력합니다.
+
+안녕하세요.
+우상법률사무소 AI 상담원입니다.
+상담받고 싶은 분야를 선택해주세요.
+① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사
+번호 또는 상담 분야를 입력해주세요.
+
+사용자가 분야를 선택하기 전에는 절대 다른 질문을 진행하지 않습니다.
+
+---
+# 말투 원칙 (중요)
+- 설문조사처럼 딱딱하게 묻지 않습니다. 실제 상담 경험이 많은 사람처럼, 고객의 답변 내용을 짧게 반영(공감/리액션)한 뒤 다음 질문으로 자연스럽게 이어갑니다.
+  예) 고객이 "자영업"이라고 답하면 → "자영업이시군요. 그럼 매달 소득이 일정하지 않으실 수도 있겠네요. 월 평균 실수령 소득은 어느 정도 되시나요?"
+  예) 고객이 "압류당했어요"라고 답하면 → "압류까지 진행된 상황이시면 마음이 많이 무거우셨을 것 같습니다. 혹시 급여, 통장, 부동산 중 어디에 압류가 들어왔는지 여쭤봐도 될까요?"
+- 매 턴마다 "감사합니다."를 기계적으로 반복하지 않습니다. 상황에 맞게 "네, 알겠습니다", "말씀해주셔서 감사합니다", "잘 알겠습니다" 등 자연스럽게 표현을 바꿔가며 답합니다.
+- 공감은 한 문장 이내로 짧게, 과하지 않게 합니다. 상담사답게 차분하고 신뢰감 있는 어조를 유지합니다.
+- 질문은 반드시 한 번에 하나씩만 합니다.
+- 중간 요약은 하지 않습니다.
+- 같은 질문을 반복하지 않습니다.
+- 법률 판단을 단정하지 않습니다.
+- 허위 정보를 만들어내지 않습니다.
+- 추측성 발언을 하지 않습니다.
+- 고객이 감정적으로 격해지거나 불안해해도 차분하고 안정적인 어조를 유지합니다.
+- 개인정보는 상담 목적 범위 내에서만 묻고 사용합니다.
+- 생년월일과 주소는 어떤 분야에서도 절대 질문하지 않습니다.
+
+---
+# 개인회생 상담 순서
+1. 연락처
+2. 나이
+3. 직업
+4. 월 실수령 소득
+5. 총 채무
+6. 채권자 수
+7. 재산
+8. 부양가족
+9. 연체 여부
+10. 압류 여부
+11. 최근 1년 내 신규 대출 여부
+
+# 개인파산 상담 순서
+1. 연락처
+2. 나이
+3. 직업
+4. 현재 소득
+5. 총 채무
+6. 재산
+7. 부양가족
+8. 채무 발생 경위
+9. 최근 재산 처분 여부
+10. 최근 대출 여부
+11. 면책 이력
+
+# 민사 상담 순서
+1. 연락처
+2. 사건 종류 확인
+3. 상대방
+4. 사건 내용
+5. 진행 상황
+6. 증거 여부
+7. 원하는 결과
+
+# 형사 상담 순서
+1. 연락처
+2. 사건 종류 확인
+3. 사건 내용
+4. 진행 단계
+5. 경찰 조사 여부
+6. 증거 여부
+
+# 이혼·가사 상담 순서
+1. 연락처
+2. 혼인 기간
+3. 자녀 여부
+4. 재산 분할
+5. 양육권
+6. 원하는 결과
+
+---
+# 상담 종료 규칙
+해당 분야의 모든 질문이 끝나면, 다른 말 없이 곧바로 아래 형식을 정확히 지켜서 출력합니다.
+이 출력 형식은 화면에 카드로 자동 렌더링되므로 아래 마커와 구조를 절대 변경하지 않습니다.
+
+[[SUMMARY_START]]
+항목1|값1
+항목2|값2
+(상담 분야에서 수집한 모든 항목을 "항목|값" 형식으로, 줄바꿈으로 구분하여 나열)
+[[SUMMARY_END]]
+
+[[ANALYSIS_START]]
+STARS|숫자(1~5)
+GRADE|A 또는 B 또는 C
+OPINION|참고 안내 내용을 2~3문장으로 서술. 법률적 판단이 아닌 참고용 안내임을 전제로, 현재 입력된 상황에서 일반적으로 고려할 수 있는 사항을 안내하고, 정확한 법률 검토는 반드시 변호사 상담을 통해 받아야 한다는 점을 포함.
+CHECK|추가로 확인이 필요한 사항을 쉼표로 구분하여 나열 (예: 채무 발생 경위,재산 처분 여부,대출 내역,가족관계)
+[[ANALYSIS_END]]
+
+상담 분야가 민사/형사/이혼·가사처럼 회생·파산 검토와 무관한 경우에도 동일한 ANALYSIS 형식을 사용하되, STARS와 GRADE는 사건의 진행 가능성/난이도에 대한 일반적인 판단으로, OPINION은 해당 분야에 맞는 내용으로 작성합니다.
+
+이 형식을 출력한 뒤에는 아무 말도 추가하지 않습니다. 예약 안내는 시스템이 별도로 화면에 표시하므로 직접 출력하지 않습니다.
+
+---
+# 주의사항
+- 법률 판단을 단정하지 않습니다.
+- 허위 정보를 제공하지 않습니다.
+- 추측하지 않습니다.
+- 감정적 대응에도 차분함을 유지합니다.
+- 개인정보는 상담 목적 범위에서만 사용합니다.
+- 최종 판단은 반드시 변호사의 상담과 검토를 통해 이루어진다는 점을 전제로 합니다.`;
+
+let messages = [];
+let isLoading = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function escapeHtml(str) {
+  if (str === undefined || str === null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addMessage(role, text) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `msg ${role === 'user' ? 'user' : 'bot'}`;
+  const avatar = role === 'user' ? '👤' : '⚖️';
+  div.innerHTML = `
+    <div class="msg-avatar">${avatar}</div>
+    <div class="msg-bubble">${escapeHtml(text).split(/\n+/).filter(Boolean).map(line => `<p>${line}</p>`).join('')}</div>
+  `;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function starsHtml(n) {
+  n = Math.max(1, Math.min(5, parseInt(n) || 3));
+  let html = '<span class="stars">';
+  for (let i = 0; i < 5; i++) {
+    html += i < n ? '★' : '<span class="dim">★</span>';
+  }
+  html += '</span>';
+  return html;
+}
+
+function calcMonthlyPayment(rows) {
+  // 개인회생 월 변제금은 단순 계산으로 확정할 수 없으므로,
+  // 의뢰인이 이해하기 쉬운 "참고 범위"와 검토 포인트만 보여줍니다.
+  const minLiving = {
+    0: 1538543,
+    1: 2520105,
+    2: 3211916,
+    3: 3906688,
+    4: 4590000
+  };
+
+  let income = 0, family = 0, adjustedFamily = 0, propertyText = '', debtText = '';
+
+  function parseMoney(text) {
+    text = String(text || '').replace(/,/g, '');
+    // 예: 200~300만 원, 100-200만 원 → 중간값 사용
+    const rangeMan = text.match(/(\d+(?:\.\d+)?)\s*[~\-]\s*(\d+(?:\.\d+)?)\s*만/);
+    if (rangeMan) return ((parseFloat(rangeMan[1]) + parseFloat(rangeMan[2])) / 2) * 10000;
+    const man = text.match(/(\d+(?:\.\d+)?)\s*만/);
+    if (man) return parseFloat(man[1]) * 10000;
+    const nums = text.match(/\d+/g);
+    if (!nums) return 0;
+    const joined = nums.join('');
+    const n = parseInt(joined, 10);
+    // 300처럼 입력하면 300만 원으로 해석, 3000000이면 원 단위로 해석
+    return n < 10000 ? n * 10000 : n;
+  }
+
+  rows.forEach(r => {
+    const label = r.label || '';
+    const value = r.value || '';
+    if (label.includes('소득')) income = parseMoney(value);
+    if (label.includes('부양가족')) {
+      const m = value.match(/(\d+)/);
+      if (m) family = Math.min(parseInt(m[1], 10), 4);
+    }
+    if (label.includes('재산')) propertyText = value;
+    if (label.includes('채무')) debtText = value;
+  });
+
+  if (!income) return null;
+
+  // 사용자가 입력한 부양가족 수에서 1명을 제외한 기준으로 생계비를 참고 계산합니다.
+  // 예: 부양가족 2명 입력 → 1명 기준 생계비 적용
+  adjustedFamily = Math.max(0, family - 1);
+  const living = minLiving[adjustedFamily] || minLiving[0];
+  const simpleLeft = income - living;
+
+  // 실무 안내용 참고 범위: 최저생계비 초과분만 기계적으로 표시하지 않고,
+  // 소득·부양가족·재산 여부를 고려해 "상담용 범위"로 완화 표시합니다.
+  let low, high;
+  if (income < 1500000) {
+    low = 0;
+    high = Math.max(150000, Math.round(income * 0.12));
+  } else if (simpleLeft > 0) {
+    low = Math.max(200000, Math.round(simpleLeft * 0.45));
+    high = Math.max(low + 100000, Math.round(simpleLeft * 0.9));
+  } else {
+    low = Math.max(150000, Math.round(income * 0.08));
+    high = Math.max(low + 150000, Math.round(income * 0.18));
+  }
+
+  // 재산이 있으면 청산가치 때문에 변제금이 높아질 수 있음을 범위에도 가볍게 반영
+  const hasProperty = propertyText && !propertyText.includes('없음');
+  if (hasProperty) {
+    low = Math.round(low * 1.15);
+    high = Math.round(high * 1.35);
+  }
+
+  const propertyNotice = hasProperty
+    ? '부동산·차량·예금 등 재산이 있는 경우에는 청산가치가 반영되어 월 변제금이 증가하거나 변제기간에 영향을 줄 수 있습니다.'
+    : '재산이 거의 없거나 적은 경우에도 채무 규모, 소득자료, 부양가족 인정 여부에 따라 월 변제금은 달라질 수 있습니다.';
+
+  return { income, living, simpleLeft, low, high, family, adjustedFamily, propertyText, debtText, hasProperty, propertyNotice };
+}
+function renderResultCards(rawText) {
+  const area = document.getElementById('chatArea');
+
+  const summaryMatch = rawText.match(/\[\[SUMMARY_START\]\]([\s\S]*?)\[\[SUMMARY_END\]\]/);
+  const analysisMatch = rawText.match(/\[\[ANALYSIS_START\]\]([\s\S]*?)\[\[ANALYSIS_END\]\]/);
+
+  if (summaryMatch) {
+    const rows = summaryMatch[1].trim().split('\n').filter(Boolean).map(line => {
+      const [label, ...rest] = line.split('|');
+      return { label: (label||'').trim(), value: rest.join('|').trim() };
+    });
+
+    // 개인회생 분야 감지 → 월변제금 계산
+    const isRecovery = rows.some(r => r.label.includes('채권자') || r.label.includes('연체') || r.label.includes('압류'));
+    let monthlyRow = '';
+    if (isRecovery) {
+      const calc = calcMonthlyPayment(rows);
+      if (calc) {
+        const fmt = n => Math.round(n/10000).toLocaleString() + '만 원';
+        const rangeText = calc.low <= 0 ? '변호사 검토 필요' : `약 ${fmt(calc.low)} ~ ${fmt(calc.high)}`;
+        const simpleText = calc.simpleLeft > 0
+          ? `참고 계산상 월 납부에 사용할 수 있는 금액은 약 ${fmt(calc.simpleLeft)}입니다.`
+          : '참고 계산만으로는 월 납부 가능 금액이 적거나 없을 수 있습니다.';
+        monthlyRow = `
+          <div class="summary-row" style="background:#fff8ee; border-radius:10px; padding:14px 10px; margin-top:8px; flex-direction:column; align-items:flex-start; gap:8px;">
+            <span class="summary-label" style="color:var(--gold-light); font-weight:700; font-size:15px;">💰 예상 월 변제금 (참고)</span>
+            <div style="width:100%; display:flex; flex-direction:column; gap:6px; font-size:13.5px;">
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-mid);">입력 월 소득</span><span style="font-weight:600;">${fmt(calc.income)}</span></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-mid);">부양가족 조정 기준 생계비</span><span style="font-weight:600;">약 ${fmt(calc.living)}</span></div>
+              <div style="font-size:11.5px; color:#9a8b73; text-align:right; margin-top:-4px;">※ 입력 부양가족 ${calc.family}명 → 참고계산 ${calc.adjustedFamily}명 기준</div>
+              <div style="font-size:12px; color:#8a7b63; line-height:1.6; background:#fffdf8; border:1px solid #f0e0c0; border-radius:6px; padding:8px;">
+                ${simpleText}<br>다만 실제 개인회생에서는 생계비 조정, 추가 생계비, 부양가족 인정 여부, 법원 보정 등을 함께 검토하므로 이 숫자만으로 가능 여부를 판단하지 않습니다.
+              </div>
+              <div style="display:flex; justify-content:space-between; background:#fff3d6; border-radius:6px; padding:10px 8px; margin-top:2px; align-items:center;">
+                <span style="color:var(--navy-800); font-weight:700;">예상 월 납부 범위</span>
+                <span style="font-weight:800; color:var(--gold-light); font-size:16px;">${rangeText}</span>
+              </div>
+              <div style="font-size:12px; color:#6b6256; line-height:1.7; margin-top:4px;">
+                ✔ 월 소득, 부양가족, 채무 규모, 추가 생계비 인정 여부, 재산 보유 현황을 종합적으로 검토합니다.<br>
+                ✔ ${escapeHtml(calc.propertyNotice)}<br>
+                ※ 위 금액은 상담 전 참고 범위이며, 정확한 월 변제금은 자료 확인 후 변호사 검토로 산정됩니다.
+              </div>
+            </div>
+          </div>`;
+      }    }
+
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-title">상담 내용 요약</div>
+      <div class="summary-grid">
+        ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value">${escapeHtml(r.value)}</span></div>`).join('')}
+        ${monthlyRow}
+      </div>
+    `;
+    area.appendChild(card);
+  }
+
+  if (analysisMatch) {
+    const lines = analysisMatch[1].trim().split('\n').filter(Boolean);
+    let stars = 3, grade = 'B', opinion = '', check = [];
+    lines.forEach(line => {
+      const idx = line.indexOf('|');
+      if (idx === -1) return;
+      const key = line.slice(0, idx).trim();
+      const val = line.slice(idx + 1).trim();
+      if (key === 'STARS') stars = val;
+      else if (key === 'GRADE') grade = val;
+      else if (key === 'OPINION') opinion = val;
+      else if (key === 'CHECK') check = val.split(',').map(s => s.trim()).filter(Boolean);
+    });
+
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-title">법률 상황 체크리스트</div>
+      <div class="summary-grid">
+        <div class="summary-row"><span class="summary-label">검토 가능성</span><span class="summary-value">${starsHtml(stars)}</span></div>
+        <div class="summary-row"><span class="summary-label">상담 난이도</span><span class="summary-value"><span class="grade-badge">${escapeHtml(grade)}</span></span></div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="summary-label" style="margin-bottom:6px;">참고 안내</div>
+        <div style="font-size:12px; color:#888; margin-bottom:6px;">※ 아래 내용은 법률적 판단이 아닌 참고용 안내입니다. 정확한 법률 검토는 반드시 변호사 상담을 통해 받으시기 바랍니다.</div>
+        <div class="opinion-block">${escapeHtml(opinion)}</div>
+      </div>
+      ${check.length ? `
+      <div style="margin-top:12px;">
+        <div class="summary-label" style="margin-bottom:6px;">추가 확인 사항</div>
+        <div class="check-block"><ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></div>
+      </div>` : ''}
+      <div class="reserve-banner">
+        무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
+        우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
+      </div>
+    `;
+    area.appendChild(card);
+  }
+
+  // 준비서류 카드
+  const docsMatch = rawText.match(/\[\[DOCS_START\]\]([\s\S]*?)\[\[DOCS_END\]\]/);
+  if (docsMatch) {
+    const rows = docsMatch[1].trim().split('\n').filter(Boolean).map(line => {
+      const idx = line.indexOf('|');
+      if (idx === -1) return null;
+      return { label: line.slice(0, idx).trim(), value: line.slice(idx+1).trim() };
+    }).filter(Boolean);
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-title">📋 준비 서류 안내</div>
+      <div class="summary-grid">
+        ${rows.map(r => `<div class="summary-row"><span class="summary-label">${escapeHtml(r.label)}</span><span class="summary-value" style="text-align:left; font-weight:400; color:var(--text-mid);">${escapeHtml(r.value)}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:10px; font-size:12px; color:#999;">※ 위 서류는 일반적인 안내이며, 실제 필요 서류는 사건에 따라 달라질 수 있습니다.</div>
+    `;
+    area.appendChild(card);
+  }
+
+  area.scrollTop = area.scrollHeight;
+  return !!(summaryMatch || analysisMatch || docsMatch);
+}
+
+
+function addPrivacyNotice() {
+  const area = document.getElementById('chatArea');
+  if (document.getElementById('privacyNotice')) return;
+  const div = document.createElement('div');
+  div.className = 'privacy-notice';
+  div.id = 'privacyNotice';
+  div.innerHTML = `<b>개인정보 안내</b><br>입력하신 연락처와 상담 내용은 상담 접수 및 변호사 연락 목적 범위에서만 사용됩니다. 정확한 법률 검토는 변호사 상담을 통해 진행됩니다.`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addChoices(choices, disableInput = true) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'choices';
+  div.id = 'choices';
+
+  // 버튼이 있으면 텍스트 입력창 비활성화
+  if (disableInput) {
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    input.disabled = true;
+    input.placeholder = '위 버튼 중 하나를 선택해주세요';
+    input.style.opacity = '0.5';
+    sendBtn.disabled = true;
+  }
+
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c;
+    btn.onclick = () => {
+      document.getElementById('choices')?.remove();
+      // 버튼 클릭 시 입력창 다시 활성화
+      const input = document.getElementById('userInput');
+      const sendBtn = document.getElementById('sendBtn');
+      input.disabled = false;
+      input.placeholder = '메시지를 입력하세요...';
+      input.style.opacity = '1';
+      sendBtn.disabled = false;
+
+      document.getElementById('userInput').value = c;
+      sendMessage();
+    };
+    div.appendChild(btn);
+  });
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.id = 'typing';
+  div.innerHTML = `<div class="msg-avatar">⚖️</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeTyping() {
+  document.getElementById('typing')?.remove();
+}
+
+// ===== 미리보기 모드: 실제 API를 호출하지 않고 가짜 데이터로 화면만 재현합니다 =====
+// 비용 없이 디자인만 확인하고 싶을 때 사용하세요.
+const PREVIEW_MODE = false;
+
+// ===== 분야별 미리보기 질문 세트 (성함 삭제, 나이는 개인회생/파산만) =====
+const PREVIEW_FIELDS = {
+  '개인회생': {
+    questions: [
+      '나이가 어떻게 되시나요?',
+      '현재 직업이 어떻게 되시나요?',
+      '월 실수령 소득은 어느 정도 되시나요?',
+      '현재 총 채무 금액은 얼마나 되시나요?',
+      '채권자(빚을 지고 있는 곳)는 몇 군데나 되시나요?',
+      '현재 보유하고 계신 재산이 있으신가요?',
+      '부양가족은 몇 분이나 되시나요?',
+      '현재 채무 연체 상황은 어떻게 되시나요?',
+      '현재 압류가 들어온 것이 있으신가요?',
+      '최근 1년 이내에 새로 대출을 받으신 적이 있으신가요?',
+      '마지막으로 연락처를 알려주시겠어요? 변호사가 직접 연락드릴 수 있습니다.\n[[PRIVACY_NOTICE]]'
+    ],
+    choices: [
+      ['20대','30대','40대','50대','60대 이상'],
+      ['직장인(급여)','자영업','프리랜서','무직'],
+      ['100만 원 미만','100~200만 원','200~300만 원','300~500만 원','500만 원 이상'],
+      ['1,000만 원 미만','1,000~3,000만 원','3,000~5,000만 원','5,000만 원~1억','1억 이상'],
+      ['1~2곳','3~5곳','6~10곳','11곳 이상'],
+      ['없음','부동산 있음','차량만 있음','예금만 있음','여러 가지 있음'],
+      ['없음','1명','2명','3명 이상'],
+      ['연체 없음','일부 연체 중','전부 연체 중','추심·독촉 받는 중'],
+      ['없음','급여 압류','통장 압류','부동산 압류'],
+      ['없음','있음'],
+      null
+    ],
+    labels: ['나이','직업','월 실수령 소득','총 채무','채권자 수','재산','부양가족','연체 여부','압류 여부','최근 1년 내 신규 대출 여부','연락처'],
+    sample: `[[SUMMARY_START]]
+나이|33세
+직업|자영업
+월 실수령 소득|300만 원
+총 채무|3,000만 원
+채권자 수|5곳
+재산|없음
+부양가족|1명
+연체 여부|없음
+압류 여부|없음
+최근 1년 내 신규 대출 여부|없음
+연락처|010-1234-5678
+[[SUMMARY_END]]
+[[ANALYSIS_START]]
+STARS|4
+GRADE|B
+OPINION|소득이 있고 재산이 없으며 신규 대출이 없는 점 등 개인회생 신청 요건을 일부 갖추고 있는 것으로 보입니다. 자영업자의 경우 소득 입증 방법이 중요한 검토 사항이 될 수 있습니다. 최종 판단은 반드시 변호사의 상담과 검토를 통해 이루어져야 합니다.
+CHECK|채무 발생 경위,소득 입증 자료(매출 내역 등),채권자별 채무 내역,재산 처분 여부
+[[ANALYSIS_END]]
+[[DOCS_START]]
+신분증 사본|주민등록증 또는 운전면허증
+주민등록등본|최근 3개월 이내 발급
+가족관계증명서|최근 3개월 이내 발급
+소득 증빙 서류|근로소득원천징수영수증 또는 매출장부·세금계산서 등
+채무 내역서|각 금융기관 대출 잔액 확인서, 채권자 목록
+통장 거래내역|최근 6개월~1년치 (주거래 통장)
+재산 관련 서류|부동산 등기부등본, 차량등록증 등 (해당자)
+압류 관련 서류|압류 통지서 (해당자)
+[[DOCS_END]]`
+  },
+  '개인파산': {
+    questions: [
+      '나이가 어떻게 되시나요?',
+      '현재 직업이 어떻게 되시나요?',
+      '현재 소득은 어느 정도 되시나요?',
+      '현재 총 채무 금액은 얼마나 되시나요?',
+      '현재 보유하고 계신 재산이 있으신가요?',
+      '부양가족은 몇 분이나 되시나요?',
+      '채무가 발생하게 된 경위를 말씀해주시겠어요?',
+      '최근에 재산을 처분하신 적이 있으신가요?',
+      '최근에 새로 대출을 받으신 적이 있으신가요?',
+      '과거에 면책을 받으신 이력이 있으신가요?',
+      '마지막으로 연락처를 알려주시겠어요? 변호사가 직접 연락드릴 수 있습니다.\n[[PRIVACY_NOTICE]]'
+    ],
+    choices: [
+      ['20대','30대','40대','50대','60대 이상'],
+      ['직장인(급여)','자영업','프리랜서','무직'],
+      ['없음','100만 원 미만','100~200만 원','200만 원 이상'],
+      ['1,000만 원 미만','1,000~3,000만 원','3,000~5,000만 원','5,000만 원~1억','1억 이상'],
+      ['없음','부동산 있음','차량만 있음','소액 예금만 있음'],
+      ['없음','1명','2명','3명 이상'],
+      ['사업 실패','실직·소득 감소','의료비·사고','보증 채무','기타'],
+      ['없음','있음(부동산)','있음(차량)','있음(기타)'],
+      ['없음','있음'],
+      ['없음','있음'],
+      null
+    ],
+    labels: ['나이','직업','현재 소득','총 채무','재산','부양가족','채무 발생 경위','최근 재산 처분 여부','최근 대출 여부','면책 이력','연락처'],
+    sample: `[[SUMMARY_START]]
+나이|45세
+직업|무직
+현재 소득|없음
+총 채무|8,000만 원
+재산|없음
+부양가족|2명
+채무 발생 경위|사업 실패
+최근 재산 처분 여부|없음
+최근 대출 여부|없음
+면책 이력|없음
+연락처|010-1234-5678
+[[SUMMARY_END]]
+[[ANALYSIS_START]]
+STARS|4
+GRADE|B
+OPINION|소득이 없고 재산이 없는 상황에서 개인파산 및 면책 신청 검토가 가능해 보입니다. 다만 채무 발생 경위와 재산 처분 이력, 면책 이력 등을 종합적으로 살펴보아야 하며, 최종 판단은 반드시 변호사 상담을 통해 이루어져야 합니다.
+CHECK|채무 발생 경위 상세 내역,재산 처분 여부,이전 면책 이력,부양가족 확인
+[[ANALYSIS_END]]
+[[DOCS_START]]
+신분증 사본|주민등록증 또는 운전면허증
+주민등록등본|최근 3개월 이내 발급
+가족관계증명서|최근 3개월 이내 발급
+소득 증빙 서류|급여명세서, 사업소득 확인서류 또는 무소득 확인서
+채무 내역서|각 금융기관 대출 잔액 확인서, 채권자 목록 전체
+통장 거래내역|최근 1~2년치 (주거래 통장)
+재산 관련 서류|부동산 등기부등본, 차량등록증 등 (해당자)
+채무 발생 경위 자료|사업 폐업 서류, 병원비 영수증 등 (해당자)
+[[DOCS_END]]`
+  },
+  '민사': {
+    questions: [
+      '어떤 종류의 민사 사건인지 선택해주세요.',
+      '상대방은 어떤 관계인가요?',
+      '사건 내용을 간단히 말씀해주세요. (상황을 2~3줄로 설명해주세요.)',
+      '현재 사건이 어느 단계까지 진행됐나요?',
+      '관련 증거(계약서, 문자, 이체 내역 등)를 보유하고 계신가요?',
+      '원하시는 결과가 어떻게 되시나요?',
+      '마지막으로 연락처를 알려주시겠어요? 변호사가 직접 연락드릴 수 있습니다.\n[[PRIVACY_NOTICE]]'
+    ],
+    choices: [
+      ['대여금(돈 빌려준 것)','손해배상','계약 분쟁','임금·퇴직금','부동산 분쟁','기타 민사'],
+      ['개인(지인·가족)','개인(모르는 사람)','회사·사업체','기타'],
+      null,
+      ['아직 아무것도 안 함','내용증명 발송','합의 시도 중','소송 준비 중','소송 진행 중'],
+      ['있음 (계약서·문자·이체내역 등)','일부 있음','없음'],
+      ['금전 배상','계약 이행','원상복구','기타'],
+      null
+    ],
+    labels: ['사건 종류','상대방','사건 내용','진행 상황','증거 여부','원하는 결과','연락처'],
+    sample: `[[SUMMARY_START]]
+사건 종류|대여금 반환
+상대방|지인(개인)
+사건 내용|3,000만 원을 빌려줬으나 1년째 미반환
+진행 상황|구두 요청만 한 상태
+증거 여부|카카오톡 대화, 계좌 이체 내역 있음
+원하는 결과|전액 반환
+연락처|010-1234-5678
+[[SUMMARY_END]]
+[[ANALYSIS_START]]
+STARS|4
+GRADE|B
+OPINION|입력하신 내용을 바탕으로 보면 민사 소송과 관련된 사항이 있는 것으로 보입니다. 이는 법률적 판단이 아닌 참고용 안내이며, 소송 진행 여부와 방법은 반드시 변호사 상담을 통해 확인하시기 바랍니다.
+CHECK|차용증 존재 여부,이자 약정 여부,상대방 재산 현황
+[[ANALYSIS_END]]`
+  },
+  '형사': {
+    questions: [
+      '어떤 종류의 형사 사건인지 선택해주세요.',
+      '본인이 피해자인가요, 피의자(혐의를 받는 분)인가요?',
+      '사건 내용을 간단히 말씀해주세요. (상황을 2~3줄로 설명해주세요.)',
+      '현재 사건이 어느 단계까지 진행됐나요?',
+      '경찰 조사를 받으신 적이 있으신가요?',
+      '관련 증거를 보유하고 계신가요?',
+      '마지막으로 연락처를 알려주시겠어요? 변호사가 직접 연락드릴 수 있습니다.\n[[PRIVACY_NOTICE]]'
+    ],
+    choices: [
+      ['사기','폭행·상해','횡령·배임','명예훼손','성범죄','절도·강도','기타 형사'],
+      ['피해자 (고소 원함)','피의자 (혐의 받음)','참고인'],
+      null,
+      ['고소 전 (상담 단계)','고소장 접수 완료','경찰 조사 중','검찰 송치됨','재판 진행 중'],
+      ['받은 적 없음','조사 예정','조사 받았음'],
+      ['있음 (문자·녹취·영상 등)','일부 있음','없음'],
+      null
+    ],
+    labels: ['사건 종류','피해자/피의자','사건 내용','진행 단계','경찰 조사 여부','증거 여부','연락처'],
+    sample: `[[SUMMARY_START]]
+사건 종류|사기
+피해자/피의자|피해자 (고소 원함)
+사건 내용|투자 명목으로 2,000만 원 편취 당함
+진행 단계|고소 전 (상담 단계)
+경찰 조사 여부|받은 적 없음
+증거 여부|있음 (문자·녹취·영상 등)
+연락처|010-1234-5678
+[[SUMMARY_END]]
+[[ANALYSIS_START]]
+STARS|3
+GRADE|B
+OPINION|입력하신 내용을 바탕으로 보면 형사 고소와 관련된 사항이 있는 것으로 보입니다. 이는 법률적 판단이 아닌 참고용 안내이며, 고소 진행 여부와 성립 요건은 반드시 변호사 상담을 통해 확인하시기 바랍니다.
+CHECK|피의자 신원 확인 여부,추가 피해자 존재 여부,편취 금액 입증 자료
+[[ANALYSIS_END]]`
+  },
+  '이혼·가사': {
+    questions: [
+      '혼인 기간이 어떻게 되시나요?',
+      '이혼을 원하는 사유를 선택해주세요.',
+      '자녀가 있으신가요?',
+      '현재 공동 재산이 있으신가요?',
+      '양육권에 대해 어떻게 생각하고 계신가요?',
+      '원하시는 결과가 어떻게 되시나요?',
+      '마지막으로 연락처를 알려주시겠어요? 변호사가 직접 연락드릴 수 있습니다.\n[[PRIVACY_NOTICE]]'
+    ],
+    choices: [
+      ['1년 미만','1~3년','3~5년','5~10년','10년 이상'],
+      ['성격 차이·갈등','배우자 외도','가정폭력(언어·신체)','경제적 문제','별거 중','기타'],
+      ['없음','1명','2명','3명 이상'],
+      ['없음 (재산 없음)','부동산 있음','예금·금융자산 있음','여러 가지 있음'],
+      ['내가 갖고 싶음','상대방이 갖도록','협의 필요','자녀 없음'],
+      ['협의 이혼','재판 이혼','양육권·양육비 해결','재산 분할','위자료 청구'],
+      null
+    ],
+    labels: ['혼인 기간','이혼 사유','자녀 여부','재산','양육권','원하는 결과','연락처'],
+    sample: `[[SUMMARY_START]]
+혼인 기간|5~10년
+이혼 사유|성격 차이·갈등
+자녀 여부|1명
+재산|부동산 있음
+양육권|내가 갖고 싶음
+원하는 결과|협의 이혼
+연락처|010-1234-5678
+[[SUMMARY_END]]
+[[ANALYSIS_START]]
+STARS|3
+GRADE|B
+OPINION|입력하신 내용을 바탕으로 보면 이혼·가사 관련 법적 절차와 관련된 사항이 있는 것으로 보입니다. 이는 법률적 판단이 아닌 참고용 안내이며, 양육권·재산 분할 등 세부 사항은 반드시 변호사 상담을 통해 확인하시기 바랍니다.
+CHECK|배우자의 동의 여부,재산 목록 상세 내역,자녀 양육 현황
+[[ANALYSIS_END]]`
+  }
+};
+
+let previewCurrentField = null;
+let previewStep = -1;
+let previewPhoneStep = false; // 전화상담 여부 확인 단계 플래그
+let previewTimeStep = false; // 상담 가능 시간대 확인 단계 플래그
+let previewAnswers = []; // 미리보기 입력값 저장
+
+function buildPreviewResult(fieldName, field, phone) {
+  const rows = field.labels.map((label, i) => ({ label, value: previewAnswers[i] || '' }));
+  const phoneIdx = field.labels.length - 1;
+  rows[phoneIdx] = { label: field.labels[phoneIdx], value: phone };
+
+  const summary = rows.map(r => `${r.label}|${r.value}`).join('\n');
+
+  let stars = 3, grade = 'B', opinion = '', check = '';
+  if (fieldName === '개인회생') {
+    stars = 4;
+    opinion = '입력하신 내용을 기준으로 개인회생 검토에 필요한 기초 정보가 접수되었습니다. 월 소득, 재산, 부양가족, 최근 대출 여부에 따라 실제 신청 가능성과 변제금이 달라질 수 있으므로 정확한 판단은 변호사 상담을 통해 확인해야 합니다.';
+    check = '채무 발생 경위,소득 입증 자료,채권자별 채무 내역,최근 대출 내역,재산 처분 여부';
+  } else if (fieldName === '개인파산') {
+    stars = 4;
+    opinion = '입력하신 내용을 기준으로 개인파산 및 면책 검토에 필요한 기초 정보가 접수되었습니다. 채무 발생 경위, 현재 소득, 재산 처분 여부가 중요하므로 정확한 판단은 변호사 상담을 통해 확인해야 합니다.';
+    check = '채무 발생 경위 상세 내역,재산 처분 여부,최근 대출 여부,이전 면책 이력,부양가족 확인';
+  } else if (fieldName === '민사') {
+    stars = 3;
+    opinion = '입력하신 내용을 기준으로 민사 사건 검토에 필요한 기초 정보가 접수되었습니다. 증거 자료와 상대방의 변제 가능성, 진행 단계에 따라 대응 방법이 달라질 수 있으므로 변호사 상담을 통해 확인해야 합니다.';
+    check = '계약서 또는 문자 자료,이체 내역,상대방 인적사항,상대방 재산 현황';
+  } else if (fieldName === '형사') {
+    stars = 3;
+    opinion = '입력하신 내용을 기준으로 형사 사건 검토에 필요한 기초 정보가 접수되었습니다. 피해자 또는 피의자 지위, 증거 확보 여부, 조사 단계에 따라 대응 방향이 달라질 수 있으므로 변호사 상담을 통해 확인해야 합니다.';
+    check = '사건 발생 일시,상대방 인적사항,증거 자료,경찰 조사 일정,진술 내용';
+  } else {
+    stars = 3;
+    opinion = '입력하신 내용을 기준으로 이혼·가사 사건 검토에 필요한 기초 정보가 접수되었습니다. 자녀, 재산, 혼인 기간, 상대방의 입장에 따라 진행 방향이 달라질 수 있으므로 변호사 상담을 통해 확인해야 합니다.';
+    check = '배우자의 동의 여부,재산 목록 상세 내역,자녀 양육 현황,별거 여부';
+  }
+
+  let docs = '';
+  if (fieldName === '개인회생') {
+    docs = `\n[[DOCS_START]]\n신분증 사본|주민등록증 또는 운전면허증\n주민등록등본|최근 3개월 이내 발급\n가족관계증명서|최근 3개월 이내 발급\n소득 증빙 서류|급여명세서, 원천징수영수증, 매출장부 등\n채무 내역서|대출 잔액 확인서, 카드 이용내역, 채권자 목록\n통장 거래내역|최근 6개월~1년치 주거래 통장\n재산 관련 서류|부동산 등기부등본, 차량등록증 등 해당 자료\n압류 관련 서류|압류 통지서 또는 추심 관련 문자\n[[DOCS_END]]`;
+  } else if (fieldName === '개인파산') {
+    docs = `\n[[DOCS_START]]\n신분증 사본|주민등록증 또는 운전면허증\n주민등록등본|최근 3개월 이내 발급\n가족관계증명서|최근 3개월 이내 발급\n소득 관련 서류|급여명세서, 사업소득 자료 또는 무소득 확인 자료\n채무 내역서|대출 잔액 확인서, 카드 이용내역, 채권자 목록 전체\n통장 거래내역|최근 1~2년치 주거래 통장\n재산 관련 서류|부동산, 차량, 보험, 예금 관련 자료\n채무 발생 경위 자료|폐업 자료, 병원비 영수증, 보증 관련 자료 등\n[[DOCS_END]]`;
+  }
+
+  return `[[SUMMARY_START]]\n${summary}\n[[SUMMARY_END]]\n[[ANALYSIS_START]]\nSTARS|${stars}\nGRADE|${grade}\nOPINION|${opinion}\nCHECK|${check}\n[[ANALYSIS_END]]${docs}`;
+}
+
+async function callClaudePreview(userMessage) {
+  await new Promise(r => setTimeout(r, 500));
+
+  // 상담 가능 시간대 선택 처리
+  if (previewTimeStep) {
+    previewTimeStep = false;
+    return `접수가 완료되었습니다.
+
+상담 가능 시간은 '${userMessage}'으로 접수되었습니다.
+담당자가 순차적으로 연락드리겠습니다.
+
+우상법률사무소 ☎ 02-927-9665
+
+다른 분야로 추가 상담이 필요하시면 아래에서 분야를 선택해주세요.`;
+  }
+
+  // 분야 선택 단계
+  if (previewCurrentField === null) {
+    const t = userMessage.replace(/\s/g, '');
+    let detected = null;
+    if (t.includes('개인회생') || t === '1' || t === '①') detected = '개인회생';
+    else if (t.includes('개인파산') || t.includes('파산') || t === '2' || t === '②') detected = '개인파산';
+    else if (t.includes('민사') || t === '3' || t === '③') detected = '민사';
+    else if (t.includes('형사') || t === '4' || t === '④') detected = '형사';
+    else if (t.includes('이혼') || t.includes('가사') || t === '5' || t === '⑤') detected = '이혼·가사';
+
+    if (detected) {
+      // 상태 완전 초기화
+      previewCurrentField = detected;
+      previewStep = 0;
+      previewPhoneStep = false;
+      previewAnswers = [];
+      const field = PREVIEW_FIELDS[previewCurrentField];
+      const firstChoices = field.choices && field.choices[0];
+      const firstChoicesTag = firstChoices ? `\n[[CHOICES:${firstChoices.join('|')}]]` : '';
+      return `${previewCurrentField} 상담을 선택하셨군요. 몇 가지 여쭤보겠습니다.\n\n${field.questions[0]}${firstChoicesTag}`;
+    }
+
+    // 전화상담 여부 응답 처리 (분야 미선택 상태에서 네/아니요 응답)
+    if (previewPhoneStep) {
+      previewPhoneStep = false;
+      const t2 = userMessage.trim();
+      if (t2.includes('네') || t2.includes('원') || t2.includes('예') || t2.includes('yes') || t2.includes('ㅇ')) {
+        previewTimeStep = true;
+        return '감사합니다. 담당 변호사가 연락드릴 수 있도록 접수하겠습니다.\n\n상담 가능 시간대를 선택해주세요.\n[[CHOICES:오전 가능|오후 가능|아무 때나 가능]]';
+      } else {
+        return '알겠습니다. 언제든 추가 상담이 필요하시면 다시 찾아주세요.\n\n우상법률사무소 ☎ 02-927-9665';
+      }
+    }
+
+    return '죄송합니다, 분야를 다시 선택해주시겠어요?\n① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사';
+  }
+
+  const field = PREVIEW_FIELDS[previewCurrentField];
+
+  // 마지막 질문(연락처)에 대한 답변 처리
+  if (previewStep >= field.questions.length - 1) {
+    const phone = userMessage.replace(/[-\s]/g, '');
+
+    // 연락처 미입력 또는 건너뛰기 감지
+    if (userMessage.trim() === '' || userMessage.includes('건너') || userMessage.includes('skip') || userMessage.includes('없음') || userMessage.includes('비공개')) {
+      return '연락처를 입력하지 않으시면 상담 결과를 제공해드리기 어렵습니다.\n\n변호사가 직접 연락드리기 위해 연락처가 필요합니다. 전화번호를 입력해주시겠어요?';
+    }
+
+    // 전화번호 형식 검증 (숫자 10~11자리)
+    if (!/^[0-9]{10,11}$/.test(phone)) {
+      return '올바른 전화번호 형식이 아닌 것 같습니다.\n\n숫자만 입력해주세요. (예: 01012345678)';
+    }
+
+    // 정상 연락처 입력 → 입력한 값으로 결과 출력
+    previewAnswers[previewStep] = userMessage;
+    const completedFieldName = previewCurrentField;
+    const result = buildPreviewResult(completedFieldName, field, userMessage);
+    previewCurrentField = null;
+    previewStep = -1;
+    previewPhoneStep = true;
+    previewTimeStep = false;
+    return result + '\n\n[[PHONE_QUESTION]]';
+  }
+
+  // 현재 질문 답변 저장 후 다음 질문으로 진행
+  previewAnswers[previewStep] = userMessage;
+  previewStep++;
+  const reactions = ['네, 확인했습니다.', '그러셨군요.', '말씀해주셔서 감사합니다.', '잘 알겠습니다.'];
+  const reaction = reactions[previewStep % reactions.length];
+  const nextQ = field.questions[previewStep];
+  const nextChoices = field.choices && field.choices[previewStep];
+  const choicesTag = nextChoices ? `\n[[CHOICES:${nextChoices.join('|')}]]` : '';
+  return `${reaction}\n\n${nextQ}${choicesTag}`;
+}
+
+async function callClaude(userMessage) {
+  messages.push({ role: 'user', content: userMessage });
+
+  if (PREVIEW_MODE) {
+    const reply = await callClaudePreview(userMessage);
+    messages.push({ role: 'assistant', content: reply });
+    return reply;
+  }
+
+  const response = await fetch('https://woosang-ai-proxy.indy1913.workers.dev', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: SYSTEM_PROMPT,
+      messages: messages
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    console.error('[AI 상담원] API 오류 응답:', response.status, errText);
+    throw new Error('API 오류: ' + response.status);
+  }
+
+  const data = await response.json();
+  if (!data || !data.content || !data.content[0] || typeof data.content[0].text !== 'string') {
+    console.error('[AI 상담원] 예상치 못한 응답 형식:', JSON.stringify(data));
+    throw new Error('응답 형식 오류');
+  }
+  const reply = data.content[0].text;
+  messages.push({ role: 'assistant', content: reply });
+  return reply;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  // 미리보기 모드에서 텍스트 입력 질문에 너무 짧은 답변 차단
+  if (PREVIEW_MODE && previewCurrentField !== null && text.length < 2) {
+    input.style.borderColor = 'var(--gold)';
+    input.placeholder = '좀 더 자세히 입력해주세요 (2글자 이상)';
+    setTimeout(() => {
+      input.style.borderColor = '';
+      input.placeholder = '메시지를 입력하세요...';
+    }, 2000);
+    return;
+  }
+
+  document.getElementById('choices')?.remove();
+  input.value = '';
+  input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  addMessage('user', text);
+  showTyping();
+
+  try {
+    const reply = await callClaude(text);
+    removeTyping();
+
+    // [[CHOICES:...]] 신호 파싱 - 버튼 선택지 추출
+    const choicesMatch = reply.match(/\[\[CHOICES:([^\]]+)\]\]/);
+    const hasPhoneQ = reply.includes('[[PHONE_QUESTION]]');
+    const hasPrivacyNotice = reply.includes('[[PRIVACY_NOTICE]]');
+    let cleanReply = reply
+      .replace(/\n\[\[CHOICES:[^\]]+\]\]/g, '')
+      .replace(/\[\[CHOICES:[^\]]+\]\]/g, '')
+      .replace('\n\n[[PHONE_QUESTION]]', '')
+      .replace('[[PHONE_QUESTION]]', '')
+      .replace('\n[[PRIVACY_NOTICE]]', '')
+      .replace('[[PRIVACY_NOTICE]]', '');
+
+    const rendered = renderResultCards(cleanReply);
+    if (!rendered) {
+      addMessage('bot', cleanReply);
+    }
+
+    if (hasPrivacyNotice) {
+      addPrivacyNotice();
+    }
+
+    // 버튼 선택지 표시
+    if (choicesMatch) {
+      const choiceList = choicesMatch[1].split('|');
+      addChoices(choiceList, true); // 입력창 비활성화
+    } else if (!hasPhoneQ && !rendered) {
+      // 버튼 없는 질문(직접 입력)일 때 입력창 명시적 활성화
+      const input = document.getElementById('userInput');
+      input.disabled = false;
+      input.placeholder = '메시지를 입력하세요...';
+      input.style.opacity = '1';
+      document.getElementById('sendBtn').disabled = false;
+    }
+
+    if (hasPhoneQ) {
+      setTimeout(() => {
+        addMessage('bot', '위 검토 결과를 바탕으로 변호사와 무료 전화 상담을 원하시나요?');
+        addChoices(['네, 연락 주세요', '아니요, 괜찮습니다']);
+      }, 400);
+    }
+
+    // 전화상담 응답 후 다시 분야 선택 버튼 표시
+    const isPhoneResponse = (text === '네, 연락 주세요' || text === '아니요, 괜찮습니다');
+    const isTimeResponse = (text === '오전 가능' || text === '오후 가능' || text === '아무 때나 가능');
+    if (text === '아니요, 괜찮습니다' || isTimeResponse) {
+      setTimeout(() => {
+        addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+      }, 800);
+    }
+
+    // 분야 버튼은 init()에서만 띄움
+  } catch (e) {
+    removeTyping();
+    addMessage('bot', '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.\n전화 상담: 02-927-9665');
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+async function init() {
+  if (PREVIEW_MODE) {
+    addMessage('bot', '안녕하세요.\n우상법률사무소 AI 상담원입니다.\n\n아래 분야를 클릭하시면 바로 상담을 시작할 수 있습니다 👇');
+    addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+    return;
+  }
+  showTyping();
+  try {
+    const reply = await callClaude('시작');
+    removeTyping();
+    addMessage('bot', reply);
+    addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+  } catch(e) {
+    removeTyping();
+    addMessage('bot', '안녕하세요.\n우상법률사무소 AI 상담원입니다.\n상담받고 싶은 분야를 선택해주세요.\n① 개인회생 ② 개인파산 ③ 민사 ④ 형사 ⑤ 이혼·가사');
+    addChoices(['① 개인회생', '② 개인파산', '③ 민사', '④ 형사', '⑤ 이혼·가사']);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
