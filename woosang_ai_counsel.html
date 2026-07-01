@@ -667,7 +667,7 @@ function renderResultCards(rawText) {
     saveToGoogleSheet(rows);
   }
 
-
+  if (analysisMatch) {
     const lines = analysisMatch[1].trim().split('\n').filter(Boolean);
     let stars = 3, grade = 'B', opinion = '', check = [];
     lines.forEach(line => {
