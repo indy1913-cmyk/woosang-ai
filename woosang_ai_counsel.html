@@ -586,6 +586,28 @@ function calcMonthlyPayment(rows) {
 
   return { income, living, simpleLeft, low, high, family, adjustedFamily, propertyText, debtText, hasProperty, propertyNotice };
 }
+// ===== 구글 시트 자동 저장 설정 =====
+const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzGTLhlykLHJmJgCSz4yYIlU4gsv3xKJF3uzXF8GTENv80WLMgC5C0PhvmAobanOtfLiQ/exec';
+
+function saveToGoogleSheet(rows) {
+  try {
+    const phoneRow = rows.find(r => r.label.includes('연락처'));
+    const phone = phoneRow ? phoneRow.value : '';
+    const summary = rows.map(r => `${r.label}: ${r.value}`).join(' / ');
+    const now = new Date();
+    const timestamp = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+    fetch(SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ timestamp, phone, summary })
+    }).catch(err => console.error('[구글 시트 저장 실패]', err));
+  } catch (err) {
+    console.error('[구글 시트 저장 오류]', err);
+  }
+}
+
 function renderResultCards(rawText) {
   const area = document.getElementById('chatArea');
 
@@ -642,9 +664,10 @@ function renderResultCards(rawText) {
       </div>
     `;
     area.appendChild(card);
+    saveToGoogleSheet(rows);
   }
 
-  if (analysisMatch) {
+
     const lines = analysisMatch[1].trim().split('\n').filter(Boolean);
     let stars = 3, grade = 'B', opinion = '', check = [];
     lines.forEach(line => {
