@@ -69,7 +69,7 @@
   }
   .nav{display:flex;align-items:center;justify-content:space-between;height:74px}
   .brand{display:flex;align-items:center;gap:12px}
-  .brand b{font-family:var(--serif);font-size:1.25rem;color:var(--ink);font-weight:800}
+  .brand b{font-family:var(--serif);font-size:1.25rem;color:var(--ink);font-weight:800;white-space:nowrap}
   .brand small{display:block;font-size:.72rem;color:var(--muted);letter-spacing:.14em;font-weight:400}
   .menu{display:flex;align-items:center;gap:30px}
   .menu a{font-size:.95rem;color:var(--ink);font-weight:500;position:relative}
@@ -86,11 +86,11 @@
 
   /* 히어로 */
   .hero{padding:88px 0 96px;position:relative;overflow:hidden}
-  .hero-content{max-width:640px}
+  .hero-content{max-width:760px;margin:0 auto;text-align:center}
   .hero h1{font-size:clamp(2.4rem,5.2vw,3.9rem);font-weight:800;margin:18px 0 22px}
   .hero h1 em{font-style:normal;color:var(--seal)}
-  .hero p{font-size:1.12rem;color:var(--ink-soft);max-width:30em;margin-bottom:34px}
-  .cta-row{display:flex;gap:14px;flex-wrap:wrap}
+  .hero p{font-size:1.12rem;color:var(--ink-soft);max-width:34em;margin:0 auto 34px}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
   .btn{padding:14px 26px;border-radius:9px;font-weight:600;font-size:1rem;transition:transform .2s,box-shadow .2s;display:inline-flex;align-items:center;gap:8px}
   .btn-primary{background:var(--seal);color:#fff;box-shadow:0 6px 20px -8px rgba(122,92,66,.6)}
   .btn-primary:hover{transform:translateY(-2px)}
@@ -173,6 +173,9 @@
   /* 반응형 */
   @media(max-width:860px){
     .contact-grid{grid-template-columns:1fr;gap:40px}
+    .hero-content{text-align:left}
+    .hero p{margin-left:0;margin-right:0}
+    .cta-row{justify-content:flex-start}
     .why-grid{grid-template-columns:1fr 1fr}
     .menu{
       display:none;position:absolute;top:74px;left:0;right:0;
@@ -190,10 +193,10 @@
   @media(max-width:520px){
     .why-grid{grid-template-columns:1fr}
     .hero{padding:52px 0 60px}
-    .call span{display:none}
+    .brand b{font-size:1.08rem}
+    .brand small{font-size:.66rem}
     section.block{padding:64px 0}
-    .chatbot span{display:none}
-    .chatbot{padding:16px;border-radius:50%}
+    .chatbot{padding:12px 18px;font-size:.9rem;right:16px;bottom:16px}
   }
   @media(prefers-reduced-motion:reduce){
     *{transition:none!important;scroll-behavior:auto!important}
@@ -217,7 +220,6 @@
       <a href="#why">우상의 약속</a>
       <a href="#contact">상담 안내</a>
     </nav>
-    <a class="call" href="tel:029279665"><span>전화상담</span> 02-927-9665</a>
     <button class="hamb" id="hamb" aria-label="메뉴 열기" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -323,9 +325,6 @@
           서울시 성북구 보문로171 노블레스 클래식 403호<br>
           Tel. 02-927-9665 &nbsp;|&nbsp; indy1913@gmail.com
         </div>
-      </div>
-      <div style="text-align:right">
-        <a class="call" href="tel:029279665">02-927-9665</a>
       </div>
     </div>
     <p class="disclaimer">
