@@ -86,7 +86,7 @@
 
   /* 히어로 */
   .hero{padding:88px 0 96px;position:relative;overflow:hidden}
-  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+  .hero-content{max-width:640px}
   .hero h1{font-size:clamp(2.4rem,5.2vw,3.9rem);font-weight:800;margin:18px 0 22px}
   .hero h1 em{font-style:normal;color:var(--seal)}
   .hero p{font-size:1.12rem;color:var(--ink-soft);max-width:30em;margin-bottom:34px}
@@ -96,23 +96,6 @@
   .btn-primary:hover{transform:translateY(-2px)}
   .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
   .btn-ghost:hover{border-color:var(--ink)}
-
-  /* 히어로 오른쪽: 큰 인장 + 문구 */
-  .hero-mark{
-    aspect-ratio:1;border:1px solid var(--line);border-radius:18px;
-    background:linear-gradient(160deg,#fff, var(--stone));
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:34px;gap:22px;
-  }
-  .big-seal{
-    width:132px;height:132px;border:3px solid var(--seal);border-radius:22px;
-    display:grid;place-items:center;color:var(--seal);
-    font-family:var(--serif);font-weight:800;font-size:2.7rem;line-height:1;
-    background:rgba(122,92,66,.07);letter-spacing:-3px;
-    box-shadow:inset 0 0 0 6px rgba(122,92,66,.07);
-  }
-  .hero-mark q{font-family:var(--serif);font-size:1.15rem;color:var(--ink);font-style:normal;quotes:none}
-  .hero-mark cite{font-style:normal;font-size:.85rem;color:var(--muted)}
 
   /* 특징 지표 */
   .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
@@ -189,8 +172,7 @@
 
   /* 반응형 */
   @media(max-width:860px){
-    .hero-grid,.contact-grid{grid-template-columns:1fr;gap:40px}
-    .hero-mark{max-width:340px;margin:0 auto}
+    .contact-grid{grid-template-columns:1fr;gap:40px}
     .why-grid{grid-template-columns:1fr 1fr}
     .menu{
       display:none;position:absolute;top:74px;left:0;right:0;
@@ -207,6 +189,7 @@
   }
   @media(max-width:520px){
     .why-grid{grid-template-columns:1fr}
+    .hero{padding:52px 0 60px}
     .call span{display:none}
     section.block{padding:64px 0}
     .chatbot span{display:none}
@@ -245,8 +228,8 @@
 
 <!-- 히어로 -->
 <section class="hero">
-  <div class="wrap hero-grid">
-    <div>
+  <div class="wrap">
+    <div class="hero-content">
       <p class="eyebrow">개인회생 · 파산 · 민사 · 형사 · 이혼</p>
       <h1>어려운 순간,<br><em>곁에서 끝까지</em><br>함께합니다.</h1>
       <p>법은 멀고 딱딱하게 느껴집니다. 우상법률사무소는 복잡한 절차를 쉬운 말로 풀어 설명하고, 사건이 끝날 때까지 의뢰인 곁을 지킵니다.</p>
@@ -254,11 +237,6 @@
         <a class="btn btn-primary" href="#contact">상담 신청하기</a>
         <a class="btn btn-ghost" href="tel:029279665">📞 02-927-9665</a>
       </div>
-    </div>
-    <div class="hero-mark">
-      <div class="brand-logo lg" role="img" aria-label="우상법률사무소 로고"></div>
-      <q>이기고 지는 것보다,<br>의뢰인을 지키는 일이 먼저입니다.</q>
-      <cite>— 우상법률사무소</cite>
     </div>
   </div>
 </section>
@@ -319,7 +297,7 @@
           <li><span class="lb">전화</span><span class="vl"><a href="tel:029279665">02-927-9665</a></span></li>
           <li><span class="lb">이메일</span><span class="vl"><a href="mailto:indy1913@gmail.com">indy1913@gmail.com</a> / <a href="mailto:indy1913@naver.com">indy1913@naver.com</a></span></li>
           <li><span class="lb">주소</span><span class="vl">서울시 성북구 보문로171 노블레스 클래식 403호</span></li>
-          <li><span class="lb">상담시간</span><span class="vl">평일 09:00 – 18:00 (야간·주말 예약 상담)</span></li>
+          <li><span class="lb">상담시간</span><span class="vl">평일 09:00 – 20:00 (주말·공휴일 예약 상담)</span></li>
         </ul>
         <div class="consult-note">
           💬 상담 전 사건 관련 서류(계약서, 문자, 고소장, 채무 내역 등)를 준비해 오시면 더 정확한 안내가 가능합니다. 상담 내용은 비밀이 철저히 보장됩니다.
