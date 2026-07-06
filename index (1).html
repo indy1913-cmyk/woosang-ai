@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- ═══════════════════════════════════════════════════════════
+     ✏️  바꿔야 할 곳: 아래 <title>과 페이지 곳곳의 [대괄호] 부분
+     ═══════════════════════════════════════════════════════════ -->
+<title>우상법률사무소 | 곁에서 끝까지</title>
+<meta name="description" content="우상법률사무소 - 형사, 민사, 가사, 부동산 등 생활 속 법률문제를 함께 풀어갑니다." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+  :root{
+    --ink:#1C2A3A;        /* 먹색 - 제목/강조 */
+    --ink-soft:#33383F;   /* 본문 */
+    --paper:#FAF8F3;      /* 종이색 배경 */
+    --stone:#ECE7DD;      /* 카드/구획 배경 */
+    --line:#DED7C9;       /* 얇은 선 */
+    --seal:#A23B33;       /* 인주(도장) 붉은색 - 포인트 */
+    --gold:#B08A4E;       /* 금색 - 아주 절제된 보조선 */
+    --muted:#6B7280;      /* 흐린 글씨 */
+    --serif:'Nanum Myeongjo', serif;
+    --sans:'Pretendard', -apple-system, sans-serif;
+    --wrap:1120px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    color:var(--ink-soft);
+    background:var(--paper);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--serif);color:var(--ink);line-height:1.35;letter-spacing:-.01em}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+  .eyebrow{
+    font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--seal);font-weight:700;margin-bottom:14px;
+  }
+  :focus-visible{outline:3px solid var(--seal);outline-offset:3px;border-radius:3px}
+
+  /* ── 인장(도장) 마크 ── */
+  .seal{
+    width:44px;height:44px;flex:0 0 44px;
+    border:2px solid var(--seal);border-radius:9px;
+    display:grid;place-items:center;
+    color:var(--seal);font-family:var(--serif);font-weight:800;
+    font-size:.92rem;line-height:1;letter-spacing:-1px;
+    background:rgba(162,59,51,.04);
+  }
+  .seal span{display:block;text-align:center}
+
+  /* ── 헤더 ── */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,248,243,.88);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand b{font-family:var(--serif);font-size:1.25rem;color:var(--ink);font-weight:800}
+  .brand small{display:block;font-size:.72rem;color:var(--muted);letter-spacing:.14em;font-weight:400}
+  .menu{display:flex;align-items:center;gap:30px}
+  .menu a{font-size:.95rem;color:var(--ink);font-weight:500;position:relative}
+  .menu a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--seal);transition:width .25s}
+  .menu a:hover::after{width:100%}
+  .call{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink);color:#fff;padding:11px 20px;border-radius:8px;
+    font-size:.92rem;font-weight:600;transition:background .2s,transform .2s;
+  }
+  .call:hover{background:#0f1a26;transform:translateY(-1px)}
+  .hamb{display:none;background:none;border:none;cursor:pointer;padding:8px}
+  .hamb span{display:block;width:24px;height:2px;background:var(--ink);margin:5px 0;transition:.3s}
+
+  /* ── 히어로 ── */
+  .hero{padding:88px 0 96px;position:relative;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+  .hero h1{font-size:clamp(2.4rem,5.2vw,3.9rem);font-weight:800;margin:18px 0 22px}
+  .hero h1 em{font-style:normal;color:var(--seal)}
+  .hero p{font-size:1.12rem;color:var(--ink-soft);max-width:30em;margin-bottom:34px}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{padding:14px 26px;border-radius:9px;font-weight:600;font-size:1rem;transition:transform .2s,box-shadow .2s;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--seal);color:#fff;box-shadow:0 6px 20px -8px rgba(162,59,51,.6)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--ink)}
+
+  /* 히어로 오른쪽: 큰 인장 + 문구 */
+  .hero-mark{
+    aspect-ratio:1;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(160deg,#fff, var(--stone));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:34px;gap:22px;
+  }
+  .big-seal{
+    width:132px;height:132px;border:3px solid var(--seal);border-radius:22px;
+    display:grid;place-items:center;color:var(--seal);
+    font-family:var(--serif);font-weight:800;font-size:2.7rem;line-height:1;
+    background:rgba(162,59,51,.05);letter-spacing:-3px;
+    box-shadow:inset 0 0 0 6px rgba(162,59,51,.06);
+  }
+  .hero-mark q{font-family:var(--serif);font-size:1.15rem;color:var(--ink);font-style:normal;quotes:none}
+  .hero-mark cite{font-style:normal;font-size:.85rem;color:var(--muted)}
+
+  /* ── 신뢰 지표 ── */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+  .stat{padding:34px 24px;text-align:center;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:none}
+  .stat b{font-family:var(--serif);font-size:2.1rem;color:var(--ink);display:block}
+  .stat span{font-size:.92rem;color:var(--muted)}
+
+  /* ── 섹션 공통 ── */
+  section.block{padding:96px 0}
+  .head{max-width:640px;margin-bottom:52px}
+  .head h2{font-size:clamp(1.8rem,3.6vw,2.5rem);font-weight:800}
+  .head p{margin-top:16px;color:var(--muted);font-size:1.05rem}
+
+  /* ── 업무분야 ── */
+  .areas{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .area{
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:30px 28px;
+    transition:transform .25s,box-shadow .25s,border-color .25s;
+  }
+  .area:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(28,42,58,.4);border-color:var(--stone)}
+  .area .no{font-family:var(--serif);color:var(--gold);font-size:.95rem;font-weight:700;letter-spacing:.1em}
+  .area h3{font-size:1.28rem;margin:12px 0 10px}
+  .area p{font-size:.96rem;color:var(--muted)}
+
+  /* ── 변호사 소개 ── */
+  .lawyer{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+  .portrait{
+    aspect-ratio:4/5;border-radius:16px;overflow:hidden;
+    background:var(--stone);display:grid;place-items:center;color:var(--muted);
+    font-size:.9rem;text-align:center;padding:24px;border:1px solid var(--line);
+  }
+  .lawyer .name{font-family:var(--serif);font-size:1.7rem;color:var(--ink);font-weight:800}
+  .lawyer .role{color:var(--seal);font-weight:600;margin:6px 0 22px}
+  .lawyer ul{list-style:none;margin-top:22px;border-top:1px solid var(--line);padding-top:22px}
+  .lawyer li{padding:7px 0 7px 22px;position:relative;color:var(--ink-soft)}
+  .lawyer li::before{content:"";position:absolute;left:0;top:15px;width:8px;height:8px;border-radius:2px;background:var(--seal)}
+
+  /* ── 강점 ── */
+  .why{background:var(--ink);color:#EDEAE3}
+  .why h2{color:#fff}
+  .why .head p{color:#B7BDC6}
+  .why .eyebrow{color:#D9A86E}
+  .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px}
+  .why-item h3{color:#fff;font-size:1.25rem;margin-bottom:12px}
+  .why-item p{color:#B7BDC6;font-size:.98rem}
+  .why-item .k{font-family:var(--serif);font-size:1.6rem;color:#D9A86E;display:block;margin-bottom:14px}
+
+  /* ── 상담 안내 ── */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+  .info-list{list-style:none}
+  .info-list li{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .info-list .lb{font-family:var(--serif);color:var(--ink);font-weight:700;flex:0 0 92px}
+  .info-list .vl{color:var(--ink-soft)}
+  .info-list a{color:var(--seal);font-weight:600}
+  .map{
+    border-radius:14px;background:var(--stone);border:1px solid var(--line);
+    display:grid;place-items:center;text-align:center;color:var(--muted);
+    padding:40px;min-height:280px;font-size:.92rem;
+  }
+  .consult-note{
+    margin-top:26px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--seal);
+    border-radius:10px;padding:22px 24px;font-size:.96rem;color:var(--ink-soft);
+  }
+
+  /* ── 푸터 ── */
+  footer{background:#141F2B;color:#96A0AC;padding:56px 0 40px;font-size:.9rem}
+  .foot-top{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;padding-bottom:30px;border-bottom:1px solid #263443}
+  .foot-brand b{font-family:var(--serif);color:#fff;font-size:1.15rem}
+  .foot-legal{margin-top:24px;line-height:1.9}
+  .foot-legal .em{color:#C3CBD4}
+  .disclaimer{margin-top:20px;font-size:.82rem;color:#6E7A87;line-height:1.8}
+
+  /* ── 챗봇 버튼 ── */
+  .chatbot{
+    position:fixed;right:22px;bottom:22px;z-index:60;
+    display:flex;align-items:center;gap:10px;
+    background:var(--seal);color:#fff;border:none;cursor:pointer;
+    padding:15px 22px;border-radius:50px;font-family:var(--sans);
+    font-size:.98rem;font-weight:600;
+    box-shadow:0 10px 30px -8px rgba(162,59,51,.7);
+    transition:transform .2s;
+  }
+  .chatbot:hover{transform:translateY(-3px)}
+  .chatbot svg{width:20px;height:20px}
+
+  /* ── 반응형 ── */
+  @media(max-width:860px){
+    .hero-grid,.lawyer,.contact-grid{grid-template-columns:1fr;gap:40px}
+    .hero-mark{max-width:340px;margin:0 auto}
+    .areas,.why-grid{grid-template-columns:1fr 1fr}
+    .menu{
+      display:none;position:absolute;top:74px;left:0;right:0;
+      flex-direction:column;gap:0;background:var(--paper);
+      border-bottom:1px solid var(--line);padding:8px 0;
+    }
+    .menu.open{display:flex}
+    .menu a{padding:14px 24px;width:100%}
+    .menu a::after{display:none}
+    .hamb{display:block}
+    .stats-grid{grid-template-columns:1fr}
+    .stat{border-right:none;border-bottom:1px solid var(--line)}
+    .stat:last-child{border-bottom:none}
+  }
+  @media(max-width:520px){
+    .areas,.why-grid{grid-template-columns:1fr}
+    .call span{display:none}
+    section.block{padding:64px 0}
+    .chatbot span{display:none}
+    .chatbot{padding:16px;border-radius:50%}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ 헤더 ═══════════ -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="우상법률사무소 홈">
+      <span class="seal" aria-hidden="true"><span>우상</span></span>
+      <span>
+        <b>우상법률사무소</b>
+        <small>WOOSANG LAW OFFICE</small>
+      </span>
+    </a>
+    <nav class="menu" id="menu">
+      <a href="#areas">업무분야</a>
+      <a href="#lawyer">변호사 소개</a>
+      <a href="#why">우상의 약속</a>
+      <a href="#contact">상담 안내</a>
+    </nav>
+    <!-- ✏️ 전화번호를 실제 번호로 바꾸세요 (두 곳: href="tel:..." 와 화면 표시 텍스트) -->
+    <a class="call" href="tel:0212345678"><span>전화상담</span> 02-1234-5678</a>
+    <button class="hamb" id="hamb" aria-label="메뉴 열기" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ═══════════ 히어로 ═══════════ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">형사 · 민사 · 가사 · 부동산</p>
+      <h1>어려운 순간,<br><em>곁에서 끝까지</em><br>함께합니다.</h1>
+      <p>법은 멀고 딱딱하게 느껴집니다. 우상법률사무소는 복잡한 절차를 쉬운 말로 풀어 설명하고, 사건이 끝날 때까지 의뢰인 곁을 지킵니다.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#contact">상담 신청하기</a>
+        <a class="btn btn-ghost" href="tel:0212345678">📞 02-1234-5678</a>
+      </div>
+    </div>
+    <div class="hero-mark">
+      <div class="big-seal" aria-hidden="true">우상</div>
+      <q>이기고 지는 것보다,<br>의뢰인을 지키는 일이 먼저입니다.</q>
+      <cite>— 우상법률사무소</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 신뢰 지표 (사실만 기재하세요) ═══════════ -->
+<!-- ✏️ 아래 숫자·문구는 실제 사무소 정보로 교체하세요. 과장 표현(승소율·1위 등)은 광고규정 위반이 될 수 있으니 피하세요. -->
+<section class="stats">
+  <div class="wrap stats-grid">
+    <div class="stat"><b>[00]년</b><span>축적된 실무 경험</span></div>
+    <div class="stat"><b>1:1</b><span>변호사 직접 상담</span></div>
+    <div class="stat"><b>연중무휴</b><span>긴급 사건 대응</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ 업무분야 ═══════════ -->
+<section class="block" id="areas">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Practice Areas</p>
+      <h2>맡고 있는 업무분야</h2>
+      <p>어떤 문제인지 확실하지 않아도 괜찮습니다. 먼저 상담을 통해 상황을 정리해 드립니다.</p>
+    </div>
+    <div class="areas">
+      <div class="area"><span class="no">01</span><h3>형사</h3><p>수사 단계부터 재판까지, 방어권을 지키며 신속하게 대응합니다.</p></div>
+      <div class="area"><span class="no">02</span><h3>민사 · 손해배상</h3><p>계약·금전·손해배상 분쟁을 증거 중심으로 꼼꼼히 다룹니다.</p></div>
+      <div class="area"><span class="no">03</span><h3>가사 · 이혼</h3><p>이혼, 양육권, 재산분할 등 예민한 문제를 신중하게 상담합니다.</p></div>
+      <div class="area"><span class="no">04</span><h3>부동산</h3><p>매매·임대차·명도 분쟁을 실무 경험을 바탕으로 해결합니다.</p></div>
+      <div class="area"><span class="no">05</span><h3>상속 · 유산</h3><p>상속재산 분할과 유류분 문제를 가족 관계까지 고려해 조율합니다.</p></div>
+      <div class="area"><span class="no">06</span><h3>기업 자문</h3><p>계약서 검토와 일상적 법률 리스크 관리를 지원합니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 변호사 소개 ═══════════ -->
+<section class="block" id="lawyer" style="background:var(--stone)">
+  <div class="wrap lawyer">
+    <div class="portrait">[변호사 사진]<br>이곳에 프로필 사진을 넣으세요<br>(권장 비율 4:5)</div>
+    <div>
+      <p class="eyebrow">변호사 소개</p>
+      <div class="name">[변호사 이름] 변호사</div>
+      <div class="role">대표변호사</div>
+      <p>"모든 사건에는 사람이 있습니다. 서류 너머의 사정을 먼저 듣는 것이 제 일의 시작이라고 믿습니다. 의뢰인이 이해할 때까지 설명하고, 끝까지 함께 가겠습니다."</p>
+      <ul>
+        <li>[출신 대학 / 로스쿨 기재]</li>
+        <li>[제○○회 변호사시험 합격 / 자격 취득]</li>
+        <li>[前 소속 · 주요 경력 기재]</li>
+        <li>[소속 위원회 · 활동 기재]</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 우상의 약속 (강점) ═══════════ -->
+<section class="block why" id="why">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Our Promise</p>
+      <h2>우상이 일하는 방식</h2>
+      <p>화려한 약속 대신, 지킬 수 있는 원칙을 말씀드립니다.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-item"><span class="k">一</span><h3>변호사가 직접 봅니다</h3><p>상담부터 마무리까지 담당 변호사가 사건을 직접 챙깁니다.</p></div>
+      <div class="why-item"><span class="k">二</span><h3>쉬운 말로 설명합니다</h3><p>지금 어떤 상황이고 무엇을 선택할 수 있는지, 이해될 때까지 안내합니다.</p></div>
+      <div class="why-item"><span class="k">三</span><h3>비용을 미리 알려드립니다</h3><p>진행 전 예상 비용과 절차를 투명하게 공유합니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 상담 안내 ═══════════ -->
+<section class="block" id="contact">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Contact</p>
+      <h2>상담 안내</h2>
+      <p>전화 또는 방문으로 상담을 신청하실 수 있습니다. 편하게 연락 주세요.</p>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <ul class="info-list">
+          <li><span class="lb">전화</span><span class="vl"><a href="tel:0212345678">02-1234-5678</a></span></li>
+          <li><span class="lb">이메일</span><span class="vl"><a href="mailto:help@woosang.kr">help@woosang.kr</a></span></li>
+          <li><span class="lb">주소</span><span class="vl">[서울시 ○○구 ○○로 00, 0층]</span></li>
+          <li><span class="lb">상담시간</span><span class="vl">평일 09:00 – 18:00 (야간·주말 예약 상담)</span></li>
+        </ul>
+        <div class="consult-note">
+          💬 상담 전 사건 관련 서류(계약서, 문자, 고소장 등)를 준비해 오시면 더 정확한 안내가 가능합니다. 상담 내용은 비밀이 철저히 보장됩니다.
+        </div>
+      </div>
+      <!-- ✏️ 지도: 카카오맵/구글맵 '지도 퍼가기(embed)' 코드를 이 박스 대신 붙여넣으세요 -->
+      <div class="map">[지도 영역]<br>카카오맵 또는 구글맵<br>'퍼가기(iframe)' 코드를 넣으세요</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ 푸터 ═══════════ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <b>우상법률사무소</b>
+        <div class="foot-legal">
+          <span class="em">대표변호사</span> [이름] &nbsp;|&nbsp; <span class="em">광고책임변호사</span> [이름]<br>
+          [서울시 ○○구 ○○로 00, 0층] &nbsp;|&nbsp; Tel. 02-1234-5678<br>
+          사업자등록번호 [000-00-00000]
+        </div>
+      </div>
+      <div style="text-align:right">
+        <a class="call" href="tel:0212345678" style="margin-bottom:12px">02-1234-5678</a>
+      </div>
+    </div>
+    <p class="disclaimer">
+      본 웹사이트는 우상법률사무소의 정보 제공을 위한 것이며, 게재된 내용은 일반적인 정보로서 개별 사건에 대한 법률자문이 아닙니다. 구체적 사안은 반드시 변호사와의 상담을 통해 확인하시기 바랍니다.<br>
+      © <span id="yr"></span> 우상법률사무소. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<!-- ═══════════ 챗봇 버튼 (다음 단계에서 GitHub 챗봇 연결) ═══════════ -->
+<button class="chatbot" id="chatbot" aria-label="상담 챗봇 열기">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <span>챗봇 상담</span>
+</button>
+
+<script>
+  // 연도 자동 표시
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // 모바일 메뉴
+  var hamb = document.getElementById('hamb');
+  var menu = document.getElementById('menu');
+  hamb.addEventListener('click', function(){
+    var open = menu.classList.toggle('open');
+    hamb.setAttribute('aria-expanded', open);
+  });
+  menu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ menu.classList.remove('open'); hamb.setAttribute('aria-expanded', false); });
+  });
+
+  // 챗봇 버튼 - 우상 AI 상담 챗봇 페이지로 이동
+  document.getElementById('chatbot').addEventListener('click', function(){
+    window.location.href = 'woosang_ai_counsel.html';
+  });
+</script>
+</body>
+</html>
