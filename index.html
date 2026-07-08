@@ -21,7 +21,10 @@
     --stone:#E2DDD5;      /* 카드/구획 배경 */
     --line:#D5D0C7;       /* 얇은 선 */
     --seal:#7A5C42;       /* 브론즈(도장) - 포인트 */
-    --gold:#A98F6B;       /* 탄 - 절제된 보조선 */
+    --gold:#C9A227;       /* 골드 - 강조 포인트 */
+    --gold-soft:#E4C465;  /* 밝은 골드 - 텍스트/보더용 */
+    --black:#161310;      /* 블랙 - CTA/헤더 배경 */
+    --black-2:#231D18;    /* 블랙 그라데이션 보조 */
     --muted:#7C756C;      /* 흐린 글씨 */
     --serif:'Nanum Myeongjo', serif;
     --sans:'Pretendard', -apple-system, sans-serif;
@@ -64,29 +67,29 @@
   /* 헤더 */
   header{
     position:sticky;top:0;z-index:50;
-    background:rgba(236,234,230,.9);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--black) 0%,var(--black-2) 100%);
+    border-bottom:1px solid rgba(201,162,39,.35);
   }
   .nav{display:flex;align-items:center;justify-content:space-between;height:74px}
   .brand{display:flex;align-items:center;gap:12px}
-  .brand b{font-family:var(--serif);font-size:1.25rem;color:var(--ink);font-weight:800;white-space:nowrap}
-  .brand small{display:block;font-size:.72rem;color:var(--muted);letter-spacing:.14em;font-weight:400}
+  .brand b{font-family:var(--serif);font-size:1.25rem;color:#fff;font-weight:800;white-space:nowrap}
+  .brand small{display:block;font-size:.72rem;color:var(--gold-soft);letter-spacing:.14em;font-weight:400}
   .menu{display:flex;align-items:center;gap:30px}
-  .menu a{font-size:.95rem;color:var(--ink);font-weight:500;position:relative}
-  .menu a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--seal);transition:width .25s}
+  .menu a{font-size:.95rem;color:#EDE7DC;font-weight:500;position:relative}
+  .menu a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--gold);transition:width .25s}
   .menu a:hover::after{width:100%}
   .call{
     display:inline-flex;align-items:center;gap:8px;
-    background:var(--ink);color:#fff;padding:11px 20px;border-radius:8px;
-    font-size:.92rem;font-weight:600;transition:background .2s,transform .2s;
+    background:var(--gold);color:#241D12;padding:11px 20px;border-radius:8px;
+    font-size:.92rem;font-weight:700;transition:background .2s,transform .2s;
   }
-  .call:hover{background:#241e1a;transform:translateY(-1px)}
+  .call:hover{background:var(--gold-soft);transform:translateY(-1px)}
   .hamb{display:none;background:none;border:none;cursor:pointer;padding:8px}
-  .hamb span{display:block;width:24px;height:2px;background:var(--ink);margin:5px 0;transition:.3s}
+  .hamb span{display:block;width:24px;height:2px;background:#fff;margin:5px 0;transition:.3s}
 
   /* 히어로 */
   .hero{padding:88px 0 96px;position:relative;overflow:hidden}
-  .hero-content{max-width:760px;margin:0 auto;text-align:center}
+  .hero-content{max-width:960px;margin:0 auto;text-align:center}
   .hero h1{font-size:clamp(2.4rem,5.2vw,3.9rem);font-weight:800;line-height:1.5;margin:18px 0 22px}
   .hero h1 em{font-style:normal;color:var(--seal)}
   .hero p{font-size:1.12rem;color:var(--ink-soft);max-width:34em;margin:0 auto 34px}
@@ -97,12 +100,73 @@
   .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
   .btn-ghost:hover{border-color:var(--ink)}
 
+  /* CTA 배너 카드 */
+  .cta-banner{
+    position:relative;display:block;max-width:460px;margin:0 auto;
+    background:linear-gradient(155deg,var(--black) 0%,var(--black-2) 100%);
+    border:1px solid rgba(201,162,39,.35);
+    border-radius:14px;padding:22px 22px 18px;color:#fff;text-decoration:none;
+    box-shadow:0 14px 30px -12px rgba(0,0,0,.7);
+    text-align:left;
+    transition:transform .2s,box-shadow .2s;
+  }
+  .cta-banner:hover{transform:translateY(-3px);box-shadow:0 18px 36px -12px rgba(0,0,0,.8)}
+  .cta-badge-top{
+    position:absolute;top:0;right:18px;z-index:3;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#241D12;
+    font-family:var(--sans);font-weight:800;font-size:.8rem;text-align:center;
+    padding:8px 12px 15px;clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
+    box-shadow:0 4px 10px -3px rgba(0,0,0,.5);
+  }
+  .cta-content{position:relative;z-index:2}
+  .cta-eyebrow{
+    font-family:var(--sans);font-size:1.6rem;letter-spacing:.04em;
+    color:#F0E6CE;font-weight:800;margin:8px 0 8px;
+  }
+  .cta-title{
+    font-family:var(--sans);font-size:clamp(8.24rem,17vw,11rem);
+    font-weight:900;line-height:1.1;margin:0 0 10px;color:#fff;letter-spacing:-.01em;
+  }
+  .cta-title .bright{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.65)}
+  .cta-title em{font-style:normal;color:var(--gold-soft)}
+  .cta-divider{border:none;border-top:1px solid rgba(255,255,255,.16);margin:0 0 10px;max-width:520px}
+  .cta-sub{
+    font-family:var(--sans);font-size:.68rem;font-weight:500;
+    color:#F0E6CE;margin:0 0 8px;line-height:1.6;
+  }
+  .cta-sub b{color:var(--gold-soft);font-weight:800}
+  .cta-features{
+    list-style:none;display:grid;grid-template-columns:repeat(3,1fr);
+    margin:0 0 16px;padding:0;font-family:var(--sans);max-width:480px;
+  }
+  .cta-features li{
+    text-align:center;padding:0 3px;border-right:1px solid rgba(255,255,255,.14);
+  }
+  .cta-features li:last-child{border-right:none}
+  .cta-features b{display:block;font-size:clamp(.6rem,1.3vw,.85rem);font-weight:800;color:var(--gold-soft);margin-bottom:4px;white-space:nowrap;letter-spacing:-.01em}
+  .cta-features span{display:block;font-size:.72rem;color:#F0E6CE;line-height:1.5}
+  .cta-confirm-btn{
+    position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#241D12;font-family:var(--sans);
+    font-weight:800;font-size:clamp(1.05rem,2.2vw,1.4rem);padding:12px 16px;border-radius:10px;
+    box-shadow:0 6px 14px -6px rgba(0,0,0,.5);
+  }
+  .cta-confirm-btn .arrow{font-size:1rem}
+  .hero-phone{margin-top:20px;text-align:center}
+  .hero-phone a{
+    display:inline-flex;align-items:center;gap:8px;color:var(--ink);
+    font-family:var(--sans);font-weight:700;font-size:1.1rem;text-decoration:none;
+    border-bottom:1.5px solid var(--line);padding-bottom:2px;transition:border-color .2s;
+  }
+  .hero-phone a:hover{border-color:var(--seal)}
+
   /* 특징 지표 */
   .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
   .stats-grid{display:grid;grid-template-columns:repeat(3,1fr)}
   .stat{padding:34px 24px;text-align:center;border-right:1px solid var(--line)}
   .stat:last-child{border-right:none}
-  .stat b{font-family:var(--serif);font-size:2rem;color:var(--ink);display:block}
+  .stat b{font-family:var(--serif);font-size:2rem;color:var(--seal);display:block}
   .stat span{font-size:.92rem;color:var(--muted)}
 
   /* 섹션 공통 */
@@ -117,7 +181,7 @@
     background:#fff;border:1px solid var(--line);border-radius:14px;padding:30px 28px;
     transition:transform .25s,box-shadow .25s,border-color .25s;
   }
-  .area:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(55,48,43,.35);border-color:var(--stone)}
+  .area:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(55,48,43,.35);border-color:var(--gold)}
   .area .no{font-family:var(--serif);color:var(--gold);font-size:.95rem;font-weight:700;letter-spacing:.1em}
   .area h3{font-size:1.28rem;margin:12px 0 10px}
   .area p{font-size:.96rem;color:var(--muted)}
@@ -150,7 +214,7 @@
   }
 
   /* 푸터 */
-  footer{background:#2A231E;color:#A69C90;padding:56px 0 40px;font-size:.9rem}
+  footer{background:var(--black);color:#A69C90;padding:56px 0 40px;font-size:.9rem;border-top:1px solid rgba(201,162,39,.35)}
   .foot-top{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;padding-bottom:30px;border-bottom:1px solid #3A322B}
   .foot-brand b{font-family:var(--serif);color:#fff;font-size:1.15rem}
   .foot-legal{margin-top:24px;line-height:1.9}
@@ -158,17 +222,38 @@
   .disclaimer{margin-top:20px;font-size:.82rem;color:#867D71;line-height:1.8}
 
   /* 챗봇 버튼 */
+  .chatbot-wrap{position:fixed;right:22px;bottom:22px;z-index:60}
   .chatbot{
-    position:fixed;right:22px;bottom:22px;z-index:60;
-    display:flex;align-items:center;gap:10px;
-    background:var(--seal);color:#fff;border:none;cursor:pointer;
-    padding:15px 22px;border-radius:50px;font-family:var(--sans);
-    font-size:.98rem;font-weight:600;
-    box-shadow:0 10px 30px -8px rgba(122,92,66,.7);
-    transition:transform .2s;
+    position:relative;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,var(--black-2),var(--black));
+    border:1px solid rgba(201,162,39,.4);
+    color:#fff;cursor:pointer;
+    padding:14px 20px;border-radius:16px;font-family:var(--sans);
+    text-align:left;
+    box-shadow:0 12px 28px -8px rgba(0,0,0,.7);
+    transition:transform .2s,box-shadow .2s;
+    animation:chatbot-breathe 2.6s ease-in-out infinite;
   }
-  .chatbot:hover{transform:translateY(-3px)}
+  .chatbot:hover{transform:translateY(-3px);box-shadow:0 16px 32px -8px rgba(0,0,0,.8)}
+  .chatbot-icon{
+    flex:none;width:38px;height:38px;border-radius:50%;
+    background:rgba(201,162,39,.16);color:var(--gold-soft);
+    display:flex;align-items:center;justify-content:center;
+  }
   .chatbot svg{width:20px;height:20px}
+  .chatbot-text{display:flex;flex-direction:column;gap:2px;line-height:1.3}
+  .chatbot-text b{font-size:.98rem;font-weight:800;color:var(--gold-soft);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .chatbot-text span{font-size:.74rem;font-weight:500;color:#F0E6CE}
+  .chatbot-tag{
+    font-style:normal;background:var(--gold);color:#241D12;
+    font-size:.62rem;font-weight:800;letter-spacing:.01em;
+    padding:2px 8px;border-radius:20px;white-space:nowrap;
+  }
+  @keyframes chatbot-breathe{
+    0%,100%{box-shadow:0 12px 28px -8px rgba(0,0,0,.7)}
+    50%{box-shadow:0 12px 34px -6px rgba(0,0,0,.85),0 0 0 8px rgba(201,162,39,.12)}
+  }
+  @media(prefers-reduced-motion:reduce){.chatbot{animation:none}}
 
   /* 반응형 */
   @media(max-width:860px){
@@ -179,8 +264,8 @@
     .why-grid{grid-template-columns:1fr 1fr}
     .menu{
       display:none;position:absolute;top:74px;left:0;right:0;
-      flex-direction:column;gap:0;background:var(--paper);
-      border-bottom:1px solid var(--line);padding:8px 0;
+      flex-direction:column;gap:0;background:var(--black-2);
+      border-bottom:1px solid rgba(201,162,39,.35);padding:8px 0;
     }
     .menu.open{display:flex}
     .menu a{padding:14px 24px;width:100%}
@@ -189,14 +274,31 @@
     .stats-grid{grid-template-columns:1fr}
     .stat{border-right:none;border-bottom:1px solid var(--line)}
     .stat:last-child{border-bottom:none}
+    .cta-content{max-width:100%}
   }
   @media(max-width:520px){
     .why-grid{grid-template-columns:1fr}
     .hero{padding:52px 0 60px}
+    .cta-banner{padding:18px 16px 14px;border-radius:12px}
+    .cta-title{font-size:8rem}
+    .cta-eyebrow{font-size:1.2rem}
+    .cta-sub{font-size:.62rem;margin-bottom:8px}
+    .cta-features{margin-bottom:14px}
+    .cta-features b{font-size:.78rem}
+    .cta-features span{font-size:.62rem;line-height:1.4}
+    .cta-confirm-btn{font-size:1rem;padding:9px 12px}
+    .cta-badge-top{font-size:.68rem;padding:7px 10px 13px;right:14px}
+    .hero-phone a{font-size:.98rem}
     .brand b{font-size:1.08rem}
     .brand small{font-size:.66rem}
     section.block{padding:64px 0}
-    .chatbot{padding:12px 18px;font-size:.9rem;right:16px;bottom:16px}
+    .chatbot-wrap{right:14px;bottom:14px}
+    .chatbot{padding:11px 16px;gap:10px;border-radius:14px}
+    .chatbot-icon{width:32px;height:32px}
+    .chatbot svg{width:17px;height:17px}
+    .chatbot-text b{font-size:.88rem}
+    .chatbot-text span{font-size:.68rem}
+    .chatbot-tag{font-size:.56rem;padding:2px 7px}
   }
   @media(prefers-reduced-motion:reduce){
     *{transition:none!important;scroll-behavior:auto!important}
@@ -235,9 +337,32 @@
       <p class="eyebrow">개인회생 · 파산 · 민사 · 형사 · 이혼</p>
       <h1>어려운 순간,<br><em>곁에서 끝까지</em><br>함께합니다.</h1>
       <p>법은 멀고 딱딱하게 느껴집니다. 우상법률사무소는 복잡한 절차를 쉬운 말로 풀어 설명하고, 사건이 끝날 때까지 의뢰인 곁을 지킵니다.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="#contact">상담 신청하기</a>
-        <a class="btn btn-ghost" href="tel:029279665">📞 02-927-9665</a>
+      <a class="cta-banner" href="woosang_ai_counsel.html">
+        <span class="cta-badge-top">무료진단</span>
+        <div class="cta-content">
+          <p class="cta-eyebrow">우상법률상담</p>
+          <p class="cta-title"><span class="bright">지금 바로</span> <em>물어보세요</em></p>
+          <hr class="cta-divider">
+          <p class="cta-sub">막막한 상황, <b>3분이면 우상에서</b> 방향을 안내해 드립니다</p>
+          <ul class="cta-features">
+            <li>
+              <b>3분 소요</b>
+              <span>간단한 정보로<br>빠르게 상담</span>
+            </li>
+            <li>
+              <b>비밀보장</b>
+              <span>개인정보 걱정 없이<br>안심하고 상담</span>
+            </li>
+            <li>
+              <b>24시간 이용 가능</b>
+              <span>언제 어디서나<br>편리하게 이용</span>
+            </li>
+          </ul>
+        </div>
+        <div class="cta-confirm-btn">지금 확인하기 <span class="arrow">→</span></div>
+      </a>
+      <div class="hero-phone">
+        <a href="tel:029279665">📞 02-927-9665</a>
       </div>
     </div>
   </div>
@@ -335,10 +460,17 @@
 </footer>
 
 <!-- 챗봇 버튼 -->
-<button class="chatbot" id="chatbot" aria-label="상담 챗봇 열기">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  <span>챗봇 상담</span>
-</button>
+<div class="chatbot-wrap">
+  <button class="chatbot" id="chatbot" aria-label="AI 상담 챗봇 열기">
+    <span class="chatbot-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </span>
+    <span class="chatbot-text">
+      <b>AI 상담 챗봇 <em class="chatbot-tag">24시간 무료</em></b>
+      <span>지금 바로 물어보세요</span>
+    </span>
+  </button>
+</div>
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
