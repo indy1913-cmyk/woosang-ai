@@ -894,12 +894,10 @@
 
 /* ===== 티스토리 RSS 자동 연동 ===== */
 (function () {
-  const CORS = 'https://corsproxy.io/?url=';
-  const RSS  = 'https://woosang-law.tistory.com/rss';
-  const wrap = document.getElementById('tistory-posts');
+  const WORKER = 'https://woosang-rss.indy1913-55b.workers.dev/';
   if (!wrap) return;
 
-  fetch(CORS + encodeURIComponent(RSS))
+  fetch(WORKER)
     .then(r => r.text())
     .then(str => {
       const xml   = new DOMParser().parseFromString(str, 'text/xml');
