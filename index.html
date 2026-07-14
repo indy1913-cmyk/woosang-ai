@@ -891,10 +891,10 @@
   });
   });
   });
-
 /* ===== 티스토리 RSS 자동 연동 ===== */
 (function () {
   const WORKER = 'https://woosang-rss.indy1913-55b.workers.dev/';
+  const wrap = document.getElementById('tistory-posts');
   if (!wrap) return;
 
   fetch(WORKER)
@@ -947,7 +947,6 @@
       wrap.innerHTML = '<p style="color:var(--muted)">글을 불러오지 못했습니다.</p>';
     });
 })();
-
 </script>
   <footer style="text-align:center; padding:24px 16px; font-size:13px; color:#5c5448; background:#fbf8f1; border-top:1px solid #e8ddc8; line-height:1.8;">
   우상법률사무소 | 대표변호사 김태형 | 대한변호사협회 등록번호 10262<br>
