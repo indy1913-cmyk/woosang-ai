@@ -596,7 +596,7 @@ function calcMonthlyPayment(rows) {
   return { income, living, simpleLeft, low, high, family, adjustedFamily, propertyText, debtText, hasProperty, propertyNotice };
 }
 // ===== 구글 시트 자동 저장 설정 =====
-const SHEET_WEBHOOK_URL = https://script.google.com/macros/s/AKfycbygXwjSNlQ2dq8t_-38MCFgbjendBHIQFx_TBXIeeEV3IfUUgJpINJrAMCanJF2WANEoA/exec
+const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbygXwjSNlQ2dq8t_-38MCFgbjendBHIQFx_TBXIeeEV3IfUUgJpINJrAMCanJF2WANEoA/exec';
 
 function saveToGoogleSheet(rows, analysis) {
   try {
