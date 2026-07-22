@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- 카카오픽셀 -->
+<script type="text/javascript" charset="UTF-8" src="//t1.daumcdn.net/kas/static/kp.js"></script>
+<script type="text/javascript">
+  kakaoPixel('495453379544024998').pageView();
+</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18280729484"></script>
 <script>
@@ -494,6 +499,9 @@ function saveToGoogleSheet(rows, analysis) {
         'value': 1.0,
         'currency': 'KRW'
       });
+    }
+    if (typeof kakaoPixel === 'function') {
+      kakaoPixel('495453379544024998').completeRegistration();
     }
   } catch (err) {
     console.error('[구글 시트 저장 오류]', err);
