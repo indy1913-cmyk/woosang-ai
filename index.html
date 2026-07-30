@@ -22,6 +22,33 @@
 <script type="text/javascript">
   kakaoPixel('4954533795440249989').pageView();
 </script>
+<!-- 카카오 픽셀 커스텀 이벤트 - 우상법률사무소 -->
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+  var PX = '4954533795440249989';
+
+  // ① 전화번호 클릭 추적 (네비게이션 + 연락처 섹션)
+  // 대상: <a href="tel:029279665"> (2곳)
+  document.querySelectorAll('a[href^="tel:"]').forEach(function (el) {
+    el.addEventListener("click", function () {
+      kakaoPixel(PX).completeRegistration('전화상담클릭');
+    });
+  });
+
+  // ② AI 진단 버튼 클릭 추적
+  // 대상1: 배너 <a class="cta-banner" href="woosang_ai_counsel.html">
+  // 대상2: 신청자격 섹션 <a class="btn btn-primary" href="woosang_ai_counsel.html">
+  // 대상3: 하단 플로팅 <button class="chatbot" id="chatbot">
+  // 대상4: 모달 내 <button class="pa-btn-cta" onclick="paOpenChat()">
+  document.querySelectorAll(
+    'a[href="woosang_ai_counsel.html"], #chatbot, .pa-btn-cta'
+  ).forEach(function (el) {
+    el.addEventListener("click", function () {
+      kakaoPixel(PX).completeRegistration('AI진단클릭');
+    });
+  });
+});
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
