@@ -493,16 +493,29 @@ function saveToGoogleSheet(rows, analysis) {
       body: JSON.stringify({ timestamp, phone, type, income, debt, seizure, content, review })
     }).catch(err => console.error('[구글 시트 저장 실패]', err));
 
-    if (typeof gtag === 'function') {
-      gtag('event', 'conversion', {
-        'send_to': 'AW-18280729484/WIDJCIvy48gcEIyX94xE',
-        'value': 1.0,
-        'currency': 'KRW'
-      });
-    }
-    if (typeof kakaoPixel === 'function') {
-      kakaoPixel('495453379544024998').completeRegistration();
-    }
+    // gtag가 아직 로드되지 않았을 경우 최대 3초 대기 후 재시도
+    const fireGtag = (retry) => {
+      if (typeof gtag === 'function') {
+        gtag('event', 'conversion', {
+          'send_to': 'AW-18280729484/WIDJCIvy48gcEIyX94xE',
+          'value': 1.0,
+          'currency': 'KRW'
+        });
+      } else if (retry > 0) {
+        setTimeout(() => fireGtag(retry - 1), 500);
+      }
+    };
+    fireGtag(6); // 500ms × 6 = 최대 3초 대기
+
+    // 카카오픽셀도 동일하게 대기 후 발화
+    const fireKakao = (retry) => {
+      if (typeof kakaoPixel === 'function') {
+        kakaoPixel('495453379544024998').completeRegistration();
+      } else if (retry > 0) {
+        setTimeout(() => fireKakao(retry - 1), 500);
+      }
+    };
+    fireKakao(6);
   } catch (err) {
     console.error('[구글 시트 저장 오류]', err);
   }
