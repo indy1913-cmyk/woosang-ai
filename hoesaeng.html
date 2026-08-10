@@ -77,6 +77,23 @@
   .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin-top:32px}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 24px;transition:transform .2s,box-shadow .2s,border-color .2s}
   .card:hover{transform:translateY(-3px);box-shadow:0 14px 30px -12px rgba(16,24,40,.12);border-color:var(--gold)}
+
+  /* 진행 결과 상세 카드 */
+  .case-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px -8px rgba(16,24,40,.12)}
+  .case-card-top{padding:24px 24px 20px;position:relative}
+  .case-badge-row{display:flex;justify-content:flex-end;margin-bottom:14px}
+  .case-badge{background:var(--black);color:var(--gold-soft);font-size:.72rem;font-weight:800;text-align:center;line-height:1.3;padding:8px 14px;border-radius:8px;white-space:nowrap}
+  .case-tag{font-size:.85rem;color:var(--seal);font-weight:800;margin-bottom:10px}
+  .case-headline{font-size:1.2rem;font-weight:800;color:var(--ink);line-height:1.4;margin-bottom:14px}
+  .case-court{font-size:.8rem;color:#5A6478;margin-bottom:16px}
+  .case-stat-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:.9rem}
+  .case-stat-row .lb{color:#5A6478;flex-shrink:0}
+  .case-stat-row .vl{font-weight:800;color:var(--ink);text-align:right}
+  .case-toggle-btn{width:100%;background:var(--paper,#F5F8FB);border:none;border-top:1px solid var(--line);padding:14px;font-size:.88rem;color:#5A6478;font-weight:700;cursor:pointer;font-family:var(--sans)}
+  .case-quote-block{padding:24px;background:#F5F8FB;border-top:1px solid var(--line)}
+  .case-quote-mark{font-size:1.6rem;color:var(--gold);font-weight:800;line-height:1;margin-bottom:8px}
+  .case-quote-block p{font-size:.98rem;color:#2E2520;line-height:1.9;margin-bottom:16px}
+  .case-quote-block p:last-child{margin-bottom:0}
   .card .no{font-family:var(--sans);color:var(--gold);font-size:.9rem;font-weight:800;letter-spacing:.06em;display:block;margin-bottom:10px}
   .card h3{font-size:1.15rem;margin-bottom:10px;font-family:var(--sans);font-weight:700;color:var(--ink);line-height:1.4}
   .card p{font-size:1rem;color:#1B2E42;line-height:1.8}
@@ -360,24 +377,65 @@
     <p class="eyebrow" style="text-align:center">진행 결과</p>
     <h2 style="text-align:center;margin-bottom:8px">실제로 이런 결과를 받으셨습니다</h2>
     <p style="text-align:center;color:#1B2E42;margin-bottom:36px;font-size:1rem">실제 진행 중인 사건을 바탕으로 작성했으며, 개인 식별 정보는 제외했습니다. 개인별 소득·채무 상황에 따라 결과는 달라질 수 있습니다</p>
-    <div class="card-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
-      <div class="card" style="border-top:3px solid var(--gold)">
-        <span class="no">자영업자 · 요식업 프랜차이즈 실패</span>
-        <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:4px">개인회생 변제계획 제출</h3>
-        <p style="font-size:.95rem;color:#1B2E42;margin-bottom:16px">총 채무 약 9,800만 원 → 월 변제금 약 128만 원(변제율 약 47%) × 36개월</p>
-        <p style="font-size:1rem;line-height:1.85">코로나19로 매장 운영이 어려워지면서 대출로 버티다 보니 채무가 눈덩이처럼 불어났습니다. 우상법률사무소와 함께 개인회생 절차를 진행하며 새로운 시작을 준비하고 있습니다.</p>
+    <div class="card-grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;align-items:start">
+      <div class="case-card">
+        <div class="case-card-top">
+          <div class="case-badge-row"><span class="case-badge">개인회생 · 변제계획 제출</span></div>
+          <p class="case-tag">자영업자 · 요식업 프랜차이즈 실패 · 대출 돌려막기</p>
+          <h3 class="case-headline">코로나19로 인한<br>요식업 폐업, 개인회생 변제계획 제출</h3>
+          <p class="case-court">서울회생법원 개인회생 (사건번호 비공개)</p>
+          <div class="case-stat-row"><span class="lb">채무 발생 원인</span><span class="vl">코로나19로 인한 매출 급감 · 대출 돌려막기</span></div>
+          <div class="case-stat-row"><span class="lb">금지명령 → 개시결정</span><span class="vl">약 3개월 소요</span></div>
+          <div class="case-stat-row"><span class="lb">총 채무</span><span class="vl">약 9,800만 원</span></div>
+          <div class="case-stat-row"><span class="lb">월 변제금</span><span class="vl">약 128만 원 (변제율 약 47%)</span></div>
+          <div class="case-stat-row"><span class="lb">변제기간</span><span class="vl">36개월</span></div>
+        </div>
+        <button class="case-toggle-btn">후기 보기 ▾</button>
+        <div class="case-quote-block">
+          <div class="case-quote-mark">"</div>
+          <p>대학 졸업 후 회사 생활을 하다가 요식업 프랜차이즈를 시작했습니다. 코로나19로 매장 운영이 어려워지면서 대출로 버티다 보니 채무가 눈덩이처럼 불어났습니다.</p>
+          <p>여러 어려움을 겪으며 사업을 정리해야 했지만, 다시 일어서기 위해 우상법률사무소와 함께 개인회생 절차를 진행하고 있습니다.</p>
+        </div>
       </div>
-      <div class="card" style="border-top:3px solid var(--gold)">
-        <span class="no">직장인 · 배우자 사업 실패</span>
-        <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:4px">개인회생 변제계획 제출</h3>
-        <p style="font-size:.95rem;color:#1B2E42;margin-bottom:16px">총 채무 약 4,160만 원 → 월 변제금 약 36만 원(변제율 약 31%) × 36개월</p>
-        <p style="font-size:1rem;line-height:1.85">배우자의 사업이 경기 침체로 어려워지면서 생활비 부담이 커졌고, 대출로 버티다 채무가 늘었습니다. 우상법률사무소와 함께 새로운 시작을 준비하고 있습니다.</p>
+
+      <div class="case-card">
+        <div class="case-card-top">
+          <div class="case-badge-row"><span class="case-badge">개인회생 · 변제계획 제출</span></div>
+          <p class="case-tag">직장인 · 배우자 사업 실패 · 대출 돌려막기</p>
+          <h3 class="case-headline">경기 침체로 인한<br>배우자 사업 실패, 개인회생 변제계획 제출</h3>
+          <p class="case-court">서울회생법원 개인회생 (사건번호 비공개)</p>
+          <div class="case-stat-row"><span class="lb">채무 발생 원인</span><span class="vl">배우자 사업 실패(경기 침체) · 대출 돌려막기</span></div>
+          <div class="case-stat-row"><span class="lb">금지명령 → 개시결정</span><span class="vl">약 3개월 소요</span></div>
+          <div class="case-stat-row"><span class="lb">총 채무</span><span class="vl">약 4,160만 원</span></div>
+          <div class="case-stat-row"><span class="lb">월 변제금</span><span class="vl">약 36만 원 (변제율 약 31%)</span></div>
+          <div class="case-stat-row"><span class="lb">변제기간</span><span class="vl">36개월</span></div>
+        </div>
+        <button class="case-toggle-btn">후기 보기 ▾</button>
+        <div class="case-quote-block">
+          <div class="case-quote-mark">"</div>
+          <p>어린 자녀를 둔 가정을 꾸려가고 있었는데, 배우자의 사업이 경기 침체로 어려워지면서 생활비와 교육비 부담이 커졌습니다.</p>
+          <p>대출로 버티다 보니 채무가 점점 늘어났고, 더는 방법이 없어 개인회생을 신청하게 됐습니다. 우상법률사무소와 함께 새로운 시작을 준비하고 있습니다.</p>
+        </div>
       </div>
-      <div class="card" style="border-top:3px solid var(--gold)">
-        <span class="no">자영업자 · 도매업 실패</span>
-        <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:4px">개인회생 변제계획 제출</h3>
-        <p style="font-size:.95rem;color:#1B2E42;margin-bottom:16px">총 채무 약 4억 7,200만 원 → 월 변제금 약 221만 원(변제율 약 28%) × 60개월</p>
-        <p style="font-size:1rem;line-height:1.85">도매업을 시작한 뒤 코로나19와 경기 불황이 겹치며 자금난이 이어졌고, 대출로 돌려막다 채무가 크게 불어났습니다. 새 직장을 구해 다시 마음을 다잡고 개인회생 절차를 준비했습니다.</p>
+
+      <div class="case-card">
+        <div class="case-card-top">
+          <div class="case-badge-row"><span class="case-badge">개인회생 · 변제계획 제출</span></div>
+          <p class="case-tag">자영업자 · 도매업 실패 · 대출 돌려막기</p>
+          <h3 class="case-headline">코로나19 여파로 인한<br>도매업 실패, 개인회생 변제계획 제출</h3>
+          <p class="case-court">서울회생법원 개인회생 (사건번호 비공개)</p>
+          <div class="case-stat-row"><span class="lb">채무 발생 원인</span><span class="vl">도매업 실패(코로나19·경기 불황) · 대출 돌려막기</span></div>
+          <div class="case-stat-row"><span class="lb">금지명령 → 개시결정</span><span class="vl">약 6개월 소요</span></div>
+          <div class="case-stat-row"><span class="lb">총 채무</span><span class="vl">약 4억 7,200만 원</span></div>
+          <div class="case-stat-row"><span class="lb">월 변제금</span><span class="vl">약 221만 원 (변제율 약 28%)</span></div>
+          <div class="case-stat-row"><span class="lb">변제기간</span><span class="vl">60개월</span></div>
+        </div>
+        <button class="case-toggle-btn">후기 보기 ▾</button>
+        <div class="case-quote-block">
+          <div class="case-quote-mark">"</div>
+          <p>도매업을 시작한 뒤 코로나19 여파와 경기 불황이 겹치며 자금난이 이어졌고, 대출로 돌려막다 보니 어느새 채무가 눈덩이처럼 불어나 있었습니다.</p>
+          <p>그래도 이대로 삶을 포기할 수는 없어 다시 마음을 다잡고 새 직장을 구했습니다. 우상법률사무소와 함께 개인회생 절차를 준비하며, 다시 시작할 기회를 얻었습니다.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -389,7 +447,7 @@
     <h2>내 신청자격,<br>지금 바로 확인해 보세요</h2>
     <p>소득과 채무 규모만 알면 1분 안에 가능 여부를 확인할 수 있습니다.</p>
     <a class="btn-cta" href="https://indy1913-cmyk.github.io/woosang-ai/woosang_ai_counsel.html?field=rehab" target="_blank">내 신청자격 1분 만에 확인하기 →</a>
-    <a class="tel-link" href="tel:02-927-9665">📞 02-927-9665 &nbsp;|&nbsp; 평일 09:00–20:00</a>
+    <a class="tel-link" href="tel:029279665">📞 02-927-9665 &nbsp;|&nbsp; 평일 09:00–20:00</a>
   </div>
 </section>
 
@@ -419,6 +477,15 @@
       a.addEventListener('click', function(){ menu.classList.remove('open'); hamb.setAttribute('aria-expanded', false); });
     });
   }
+
+  document.querySelectorAll('.case-toggle-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var quote = btn.nextElementSibling;
+      var open = quote.style.display !== 'none';
+      quote.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? '후기 보기 ▾' : '후기 닫기 ▴';
+    });
+  });
 </script>
 
 </body>
