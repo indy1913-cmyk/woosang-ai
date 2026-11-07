@@ -349,9 +349,10 @@
 
 <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
 <script type="text/javascript">
-if(!wcs_add) var wcs_add = {};
-wcs_add["wa"] = "s_684ed75527c";
-if(window.wcs) {
+if (window.wcs) {
+  if(!wcs_add) var wcs_add = {};
+  wcs_add["wa"] = "s_684ed75527c";
+  wcs.inflow("woosanglaw.com");
   wcs_do();
 }
 </script>
@@ -374,7 +375,7 @@ if(window.wcs) {
  <a class="c3" href="tel:029279665" data-cv="tel">📞 <span class="l">02-927-9665</span><span class="s">전화상담</span></a>
 </div>
 <script>
-document.querySelectorAll('#wa-cta a').forEach(function(a){a.addEventListener('click',function(){try{if(window.wcs){var _nasa={};_nasa["cnv"]=wcs.cnv("4","1");wcs_do(_nasa);}}catch(e){}});});
+document.querySelectorAll('#wa-cta a').forEach(function(a){a.addEventListener('click',function(){try{if(window.wcs&&wcs.trans){var m={selftest:'custom003',talk:'custom002',tel:'custom001'};var c={};c.type=m[a.getAttribute('data-cv')]||'custom001';wcs.trans(c);}}catch(e){}});});
 </script>
 </body>
 </html>
