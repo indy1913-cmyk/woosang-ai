@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>우상법률사무소 AI 상담원</title>
 <link rel="canonical" href="https://www.woosanglaw.com/woosang_ai_counsel.html" />
-<meta property="og:title" content="우상법률사무소 AI 진단 챗봇">
+<meta property="og:title" content="우상법률사무소 AI 무료 진단 챗봇">
 <meta property="og:description" content="개인회생·파산·민사·형사·이혼가사 24시간 AI 진단 서비스">
 <meta property="og:image" content="https://postfiles.pstatic.net/MjAyNjA3MDFfOTUg/MDAxNzgyODcwNTQxMDA5.VEv35oKh4iN1T5OGQ-Y0KEQOegFz5ew2lK92CvgmwJog.7umC0wsa-mBmv8D0k8122mDl4O6W3UDpVRoG1bVuRoUg.PNG/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_1%EC%9D%BC_%EC%98%A4%EC%A0%84_10_48_43.png?type=w773">
 <meta property="og:url" content="https://www.woosanglaw.com/woosang_ai_counsel.html">
@@ -628,7 +628,7 @@ function renderResultCards(rawText) {
         <div class="check-block"><ul>${check.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></div>
       </div>` : ''}
       <div class="reserve-banner">
-        상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
+        무료 상담 예약을 원하시면 <b>'상담예약'</b>이라고 입력해주세요.<br>
         우상법률사무소 ☎ <a href="tel:02-927-9665">02-927-9665</a>
       </div>
     `;
@@ -1044,7 +1044,7 @@ async function sendMessage() {
 
     if (hasPhoneQ) {
       setTimeout(() => {
-        addMessage('bot', '위 검토 결과를 바탕으로 변호사와 전화 상담을 원하시나요?');
+        addMessage('bot', '위 검토 결과를 바탕으로 변호사와 무료 전화 상담을 원하시나요?');
         addChoices(['네, 연락 주세요', '아니요, 괜찮습니다']);
       }, 400);
     }
@@ -1095,7 +1095,7 @@ if (window.wcs) {
 }
 </style>
 <div id="wa-cta">
- <a class="c1" href="https://form.naver.com/response/uO-D_rZUSTDL13cfeuI0vA" target="_blank" rel="noopener" data-cv="selftest">📝 <span class="l">1분 </span>자가진단</a>
+ <a class="c1" href="https://form.naver.com/response/uO-D_rZUSTDL13cfeuI0vA" target="_blank" rel="noopener" data-cv="selftest">📝 <span class="l">1분 무료 </span>자가진단</a>
  <a class="c2" href="https://talk.naver.com/W4H0A9" target="_blank" rel="noopener" data-cv="talk">💬 <span class="l">네이버 </span>톡톡상담</a>
  <a class="c3" href="tel:029279665" data-cv="tel">📞 <span class="l">02-927-9665</span><span class="s">전화상담</span></a>
 </div>
