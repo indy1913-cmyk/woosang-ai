@@ -122,19 +122,9 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
 <label class="q" for="when">연락 받기 편한 시간<span class="opt">선택</span></label>
 <select id="when"><option value="">언제든 괜찮아요</option><option>오전 9시~12시</option><option>오후 12시~6시</option><option>저녁 6시~8시</option><option>문자로 먼저 연락 원함</option></select>
 
-<div class="consent" id="consentBox">
-<label class="ck"><input type="checkbox" id="agree"> <b>개인정보 수집·이용에 동의합니다</b> <span class="req">필수</span></label>
-<ul class="small">
-<li>수집 항목: 연락처, 성함(선택), 상담 분야와 적어주신 상황</li>
-<li>이용 목적: 상담 연락과 상담 진행</li>
-<li>보유 기간: 접수일로부터 1년 (사건을 맡기시면 사건 종료 후 관계 법령에 따른 기간). 기간이 지나면 지체 없이 파기합니다.</li>
-<li>삭제 요청: 언제든 02-927-9665로 연락 주시면 바로 삭제해 드립니다.</li>
-<li>동의하지 않으셔도 되지만, 이 경우 신청서로는 접수가 어렵고 전화 상담은 가능합니다. <a href="https://www.woosanglaw.com/privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a></li>
-</ul>
-</div>
 <button type="submit" class="submit" id="submitBtn">무료 상담 신청하기</button>
 <p class="err" id="err"></p>
-<p class="privacy">🔒 남겨주신 연락처와 내용은 상담 연락 목적으로만 사용하며 외부에 공개하지 않습니다. 접수일로부터 1년이 지나면 파기합니다. 주민등록번호·계좌 비밀번호 등 민감정보는 적지 마세요.</p>
+<p class="privacy">🔒 남겨주신 연락처와 내용은 상담 연락 목적으로만 사용하며 외부에 공개하지 않습니다. 주민등록번호·계좌 비밀번호 등 민감정보는 적지 마세요.</p>
 </form>
 </section>
 
@@ -189,7 +179,6 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
     var t=document.querySelector('input[name=type]:checked');
     if(!/^0\d{8,10}$/.test(phone)){showErr('연락처를 숫자로 정확히 입력해 주세요. (예: 01012345678)'); $('phone').focus(); return;}
     if(!t){showErr('어떤 문제인지 하나만 골라주세요.'); return;}
-    if(!$('agree').checked){showErr('개인정보 수집·이용 동의에 체크해 주세요.'); $('agree').focus(); return;}
     var picked=t.value;
     var type = picked==='압류' ? '개인회생' : picked;
     var parts=[];

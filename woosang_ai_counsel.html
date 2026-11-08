@@ -1030,9 +1030,6 @@ async function sendMessage() {
       addMessage('bot', cleanReply);
     }
 
-    if (hasPrivacyNotice) {
-      addPrivacyNotice();
-    }
 
     if (choicesMatch) {
       const choiceList = choicesMatch[1].split('|');
