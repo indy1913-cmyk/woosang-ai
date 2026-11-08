@@ -187,13 +187,15 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
     if($('content').value.trim()) parts.push('상담 내용: '+clean($('content').value));
     var now=new Date(), pad=function(n){return String(n).padStart(2,'0');};
     var ts=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+' '+pad(now.getHours())+':'+pad(now.getMinutes());
-    var payload={timestamp:ts, phone:phone, type:type, income:$('income').value, debt:$('debt').value, seizure:$('seizure').value, content:parts.join(' / '), review:''};
+    var phoneFmt = phone.length===11 ? phone.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3') : phone.length===10 ? phone.replace(/^(02)(\d{4})(\d{4})$/,'$1-$2-$3').replace(/^(\d{3})(\d{3})(\d{4})$/,'$1-$2-$3') : phone;
+    var payload={timestamp:ts, phone:phoneFmt, type:type, income:$('income').value, debt:$('debt').value, seizure:$('seizure').value, content:parts.join(' / '), review:''};
     btn.disabled=true; btn.textContent='접수 중...';
     var finished=false;
     function done(){ if(finished) return; finished=true; $('formCard').style.display='none'; $('doneCard').style.display='block'; window.scrollTo(0,0); fireConversions(); }
+    setTimeout(done,1500);
     fetch(HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),keepalive:true})
       .then(done)
-      .catch(function(){ btn.disabled=false; btn.textContent='무료 상담 신청하기'; showErr('전송이 잘 되지 않았어요. 잠시 후 다시 시도하시거나 02-927-9665로 전화 주세요.'); });
+      .catch(function(){ if(finished) return; finished=true; btn.disabled=false; btn.textContent='무료 상담 신청하기'; showErr('전송이 잘 되지 않았어요. 잠시 후 다시 시도하시거나 02-927-9665로 전화 주세요.'); });
   });
 })();
 </script>

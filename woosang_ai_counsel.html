@@ -478,7 +478,7 @@ function saveToGoogleSheet(rows, analysis) {
       return r ? r.value : '';
     };
 
-    const phone = findValue('연락처');
+    const phone = (function(p){p=String(p||'').replace(/[^0-9]/g,''); if(p.length===11) return p.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3'); if(p.length===10) return p.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3'); return p;})(findValue('연락처'));
     const income = findValue('소득');
     const debt = findValue('채무', '발생');
     const seizure = findValue('압류');
