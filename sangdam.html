@@ -62,7 +62,12 @@ textarea{min-height:110px;resize:vertical}
 .alt a{flex:1;text-align:center;padding:12px 6px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;border:1px solid #1b7a4c;color:#145c3b;background:#fff}
 .small{font-size:14px;color:#5b6770}
 footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
+.consent{margin:20px 0 6px;padding:14px 14px 6px;border:1px solid #cfdcd5;border-radius:12px;background:#f8fbf9}
+.consent .ck{display:flex;align-items:center;gap:8px;font-size:15px;cursor:pointer}
+.consent input{width:20px;height:20px;accent-color:#145c3b}
+.consent ul{margin:8px 0 6px;padding-left:18px;color:#5b6770;font-size:13px;line-height:1.6}
 </style>
+<script>/*ws-ft*/(function(){try{var K='ws_ft',o=null;try{o=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}var p=new URLSearchParams(location.search),r=document.referrer||'',h='';try{h=r?new URL(r).hostname.replace(/^www\./,''):''}catch(e){}var internal=/(^|\.)woosanglaw\.com$|indy1913-cmyk\.github\.io$/.test(h);var s=p.get('utm_source')||'',c=p.get('utm_campaign')||'';if(!internal||!o){if(p.get('n_media')||p.get('n_query')||p.get('NaPm')){s='파워링크';c=p.get('n_query')||c}else if(p.get('gclid')){s='google_ads'}if(!s&&h&&!internal)s=h;if(!s)s='직접 방문';var upd=!o||(Date.now()-o.t>30*864e5)||(!internal&&(p.get('utm_source')||h||s==='파워링크'||s==='google_ads'));if(upd&&!(internal&&o)){var land=(location.pathname.replace(/^\//,'').replace(/\.html$/,'')||'home');o={s:String(s).replace(/\//g,'／').slice(0,60),c:String(c).replace(/\//g,'／').slice(0,40),land:land,t:Date.now()};localStorage.setItem(K,JSON.stringify(o))}}window.wsSource=function(){var x=null;try{x=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}return x?(x.s+(x.c?' ('+x.c+')':'')+' → '+x.land):''}}catch(e){}})();</script>
 </head>
 <body>
 <header class="top"><div class="wrap"><a class="logo" href="https://www.woosanglaw.com/">우상법률사무소</a><a class="top-call" href="tel:050713229665">☎ 02-927-9665</a></div></header>
@@ -117,9 +122,19 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
 <label class="q" for="when">연락 받기 편한 시간<span class="opt">선택</span></label>
 <select id="when"><option value="">언제든 괜찮아요</option><option>오전 9시~12시</option><option>오후 12시~6시</option><option>저녁 6시~8시</option><option>문자로 먼저 연락 원함</option></select>
 
+<div class="consent" id="consentBox">
+<label class="ck"><input type="checkbox" id="agree"> <b>개인정보 수집·이용에 동의합니다</b> <span class="req">필수</span></label>
+<ul class="small">
+<li>수집 항목: 연락처, 성함(선택), 상담 분야와 적어주신 상황</li>
+<li>이용 목적: 상담 연락과 상담 진행</li>
+<li>보유 기간: 접수일로부터 1년 (사건을 맡기시면 사건 종료 후 관계 법령에 따른 기간). 기간이 지나면 지체 없이 파기합니다.</li>
+<li>삭제 요청: 언제든 02-927-9665로 연락 주시면 바로 삭제해 드립니다.</li>
+<li>동의하지 않으셔도 되지만, 이 경우 신청서로는 접수가 어렵고 전화 상담은 가능합니다. <a href="https://www.woosanglaw.com/privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a></li>
+</ul>
+</div>
 <button type="submit" class="submit" id="submitBtn">무료 상담 신청하기</button>
 <p class="err" id="err"></p>
-<p class="privacy">🔒 남겨주신 연락처와 내용은 상담 연락 목적으로만 사용하며 외부에 공개하지 않습니다. 주민등록번호·계좌 비밀번호 등 민감정보는 적지 마세요.</p>
+<p class="privacy">🔒 남겨주신 연락처와 내용은 상담 연락 목적으로만 사용하며 외부에 공개하지 않습니다. 접수일로부터 1년이 지나면 파기합니다. 주민등록번호·계좌 비밀번호 등 민감정보는 적지 마세요.</p>
 </form>
 </section>
 
@@ -148,7 +163,9 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
   function $(id){return document.getElementById(id);}
   function clean(s){return String(s||'').replace(/[<>&]/g,function(c){return {'<':'〈','>':'〉','&':'＆'}[c];}).replace(/\//g,'／').replace(/\s*\n\s*/g,' ').trim();}
   function source(){
+    var ft=(typeof window.wsSource==='function')?window.wsSource():'';
     var p=new URLSearchParams(location.search), s=p.get('utm_source')||p.get('from')||'';
+    if(ft){ return ft+(s&&ft.indexOf(s)!==0?' → 버튼:'+s:''); }
     var c=p.get('utm_campaign')||'';
     if(!s){var r=document.referrer||''; if(!r) s='직접 방문'; else { try{ s=new URL(r).hostname.replace(/^www\./,''); }catch(e){ s=r.slice(0,60); } } }
     return s+(c?' ('+c+')':'');
@@ -161,6 +178,7 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
   $('phone').addEventListener('input',function(){this.value=this.value.replace(/[^0-9-]/g,'');});
   function showErr(m){err.textContent=m; err.style.display='block';}
   function fireConversions(){
+    try{ (function ga(n){ if(typeof gtag==='function'){ gtag('event','generate_lead',{form_name:'sangdam'}); } else if(n>0) setTimeout(function(){ga(n-1)},500); })(6); }catch(e){}
     var tries=6;(function g(){if(typeof gtag==='function'){gtag('event','conversion',{'send_to':'AW-18280729484/WIDJCIvy48gcEIyX94xE','value':1.0,'currency':'KRW'});}else if(tries-->0)setTimeout(g,500);})();
     var kt=6;(function k(){if(typeof kakaoPixel==='function'){try{kakaoPixel('495453379544024998').completeRegistration();}catch(e){}}else if(kt-->0)setTimeout(k,500);})();
     try{if(window.wcs&&wcs.trans){wcs.trans({type:'lead'});}}catch(e){}
@@ -171,6 +189,7 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
     var t=document.querySelector('input[name=type]:checked');
     if(!/^0\d{8,10}$/.test(phone)){showErr('연락처를 숫자로 정확히 입력해 주세요. (예: 01012345678)'); $('phone').focus(); return;}
     if(!t){showErr('어떤 문제인지 하나만 골라주세요.'); return;}
+    if(!$('agree').checked){showErr('개인정보 수집·이용 동의에 체크해 주세요.'); $('agree').focus(); return;}
     var picked=t.value;
     var type = picked==='압류' ? '개인회생' : picked;
     var parts=[];

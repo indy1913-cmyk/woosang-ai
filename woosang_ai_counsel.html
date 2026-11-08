@@ -323,6 +323,7 @@ body {
   .call-bar { font-size: 12px; padding: 8px; }
 }
 </style>
+<script>/*ws-ft*/(function(){try{var K='ws_ft',o=null;try{o=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}var p=new URLSearchParams(location.search),r=document.referrer||'',h='';try{h=r?new URL(r).hostname.replace(/^www\./,''):''}catch(e){}var internal=/(^|\.)woosanglaw\.com$|indy1913-cmyk\.github\.io$/.test(h);var s=p.get('utm_source')||'',c=p.get('utm_campaign')||'';if(!internal||!o){if(p.get('n_media')||p.get('n_query')||p.get('NaPm')){s='파워링크';c=p.get('n_query')||c}else if(p.get('gclid')){s='google_ads'}if(!s&&h&&!internal)s=h;if(!s)s='직접 방문';var upd=!o||(Date.now()-o.t>30*864e5)||(!internal&&(p.get('utm_source')||h||s==='파워링크'||s==='google_ads'));if(upd&&!(internal&&o)){var land=(location.pathname.replace(/^\//,'').replace(/\.html$/,'')||'home');o={s:String(s).replace(/\//g,'／').slice(0,60),c:String(c).replace(/\//g,'／').slice(0,40),land:land,t:Date.now()};localStorage.setItem(K,JSON.stringify(o))}}window.wsSource=function(){var x=null;try{x=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}return x?(x.s+(x.c?' ('+x.c+')':'')+' → '+x.land):''}}catch(e){}})();</script>
 </head>
 <body>
 
@@ -491,7 +492,8 @@ function saveToGoogleSheet(rows, analysis) {
     else if (labelSet.includes('혼인 기간')) type = '이혼·가사';
     else if (labelSet.includes('사건 종류')) type = '민사';
 
-    const content = rows.map(r => `${r.label}: ${r.value}`).join(' / ');
+    const __src = (typeof window.wsSource === 'function' && window.wsSource()) || (document.referrer ? (function(){try{return new URL(document.referrer).hostname.replace(/^www\./,'');}catch(e){return '';}})() : '직접 방문');
+    const content = rows.map(r => `${r.label}: ${r.value}`).join(' / ') + ' / 유입경로: ' + String(__src).replace(/\//g,'／') + ' / 접수: AI 챗봇';
     const review = analysis && analysis.opinion ? analysis.opinion : '';
 
     const now = new Date();
@@ -507,6 +509,7 @@ function saveToGoogleSheet(rows, analysis) {
     // gtag가 아직 로드되지 않았을 경우 최대 3초 대기 후 재시도
     const fireGtag = (retry) => {
       if (typeof gtag === 'function') {
+        gtag('event', 'generate_lead', { form_name: 'ai_counsel' });
         gtag('event', 'conversion', {
           'send_to': 'AW-18280729484/WIDJCIvy48gcEIyX94xE',
           'value': 1.0,
@@ -668,7 +671,7 @@ function addPrivacyNotice() {
   const div = document.createElement('div');
   div.className = 'privacy-notice';
   div.id = 'privacyNotice';
-  div.innerHTML = `<b>개인정보 안내</b><br>입력하신 연락처와 상담 내용은 상담 접수 및 변호사 연락 목적 범위에서만 사용됩니다. 정확한 법률 검토는 변호사 상담을 통해 진행됩니다.`;
+  div.innerHTML = `<b>개인정보 안내</b><br>입력하신 연락처와 상담 내용은 상담 접수 및 연락 목적 범위에서만 사용되며, 접수일로부터 1년이 지나면 파기합니다(삭제 요청: 02-927-9665, <a href="https://www.woosanglaw.com/privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a>). 정확한 법률 검토는 변호사 상담을 통해 진행됩니다.`;
   area.appendChild(div);
   area.scrollTop = area.scrollHeight;
 }
