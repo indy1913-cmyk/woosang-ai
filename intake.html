@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>접수 입력 (직원용)</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',Arial,sans-serif;background:#f5f8f7;color:#17202a;line-height:1.6}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:20px;margin:6px 0 2px}
+.sub{color:#5b6770;font-size:13px;margin:0 0 14px}
+label.q{display:block;font-weight:700;font-size:14px;margin:16px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label{padding:10px 16px;border:1.5px solid #cfd8d5;border-radius:999px;background:#fff;font-size:15px;font-weight:600;cursor:pointer}
+.chips input:checked+label{background:#1a7f4b;border-color:#1a7f4b;color:#fff}
+input[type=tel],input[type=text],select,textarea{width:100%;padding:13px 12px;border:1.5px solid #cfd8d5;border-radius:10px;font-size:16px;background:#fff;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+button{margin-top:20px;width:100%;padding:15px;border:0;border-radius:12px;background:#1a7f4b;color:#fff;font-size:17px;font-weight:700}
+button:disabled{opacity:.6}
+.msg{margin-top:14px;padding:12px;border-radius:10px;font-size:14px;display:none}
+.ok{background:#e3f4ea;color:#14542f}.err{background:#fde8e6;color:#8a1f16}
+.opt{font-weight:400;color:#8a949b;font-size:12px;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>접수 입력</h1>
+<p class="sub">전화·톡톡·네이버폼·방문으로 들어온 상담을 적으면 시트에 저장되고 텔레그램 알림이 갑니다.</p>
+<form id="f" autocomplete="off">
+<label class="q">어디로 왔나요?</label>
+<div class="chips" id="ch">
+<input type="radio" name="ch" id="c1" value="전화" checked><label for="c1">전화</label>
+<input type="radio" name="ch" id="c2" value="톡톡"><label for="c2">톡톡</label>
+<input type="radio" name="ch" id="c3" value="네이버폼"><label for="c3">네이버폼</label>
+<input type="radio" name="ch" id="c4" value="방문"><label for="c4">방문</label>
+<input type="radio" name="ch" id="c5" value="기타"><label for="c5">기타</label>
+</div>
+<label class="q" for="phone">연락처</label>
+<input type="tel" id="phone" inputmode="numeric" placeholder="숫자만 입력 (예: 01012345678)" maxlength="13">
+<label class="q" for="name">이름<span class="opt">선택</span></label>
+<input type="text" id="name" maxlength="20" placeholder="성함 또는 호칭">
+<label class="q" for="type">상담 분야</label>
+<select id="type"><option value="">선택</option><option>개인회생</option><option>개인파산</option><option>압류</option><option>민사</option><option>형사</option><option>이혼·가사</option><option>상속·채무</option><option>기타</option></select>
+<label class="q" for="src">어떻게 알고 연락했나요?<span class="opt">선택</span></label>
+<select id="src"><option value="">모름</option><option>플레이스(0507-1332)</option><option>홈페이지 번호(0507-1322)</option><option>블로그 번호(0507-1358)</option><option>티스토리 번호(0507-1366)</option><option>대표번호 직접</option><option>파워링크</option><option>인스타·유튜브</option><option>당근</option><option>지인 소개</option><option>기타</option></select>
+<label class="q" for="memo">메모<span class="opt">선택</span></label>
+<textarea id="memo" maxlength="500" placeholder="통화 내용, 연락 희망 시간 등"></textarea>
+<button type="submit" id="btn">저장하고 알림 보내기</button>
+<div class="msg ok" id="ok"></div><div class="msg err" id="err"></div>
+</form>
+</div>
+<script>
+(function(){
+  var HOOK='https://script.google.com/macros/s/AKfycbygXwjSNlQ2dq8t_-38MCFgbjendBHIQFx_TBXIeeEV3IfUUgJpINJrAMCanJF2WANEoA/exec';
+  var K='ws_staff_key';
+  try{var m=location.hash.match(/k=([A-Za-z0-9]+)/); if(m){localStorage.setItem(K,m[1]); history.replaceState(null,'',location.pathname);}}catch(e){}
+  function $(i){return document.getElementById(i);}
+  function show(id,t){ $('ok').style.display='none'; $('err').style.display='none'; $(id).textContent=t; $(id).style.display='block'; }
+  $('phone').addEventListener('input',function(){this.value=this.value.replace(/[^0-9-]/g,'');});
+  $('f').addEventListener('submit',function(e){
+    e.preventDefault();
+    var key=''; try{key=localStorage.getItem(K)||'';}catch(x){}
+    if(!key){show('err','열쇠가 없습니다. 텔레그램으로 받은 접수 입력 링크로 다시 열어 주세요.'); return;}
+    var phone=$('phone').value.replace(/[^0-9]/g,'');
+    if(!/^0\d{8,10}$/.test(phone)){show('err','연락처를 숫자로 정확히 입력해 주세요.'); return;}
+    var fmt=phone.length===11?phone.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3'):phone.length===10?phone.replace(/^(02)(\d{4})(\d{4})$/,'$1-$2-$3').replace(/^(\d{3})(\d{3})(\d{4})$/,'$1-$2-$3'):phone;
+    var d=new Date(),p=function(n){return String(n).padStart(2,'0')};
+    var ts=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+    var ch=document.querySelector('input[name=ch]:checked').value;
+    var body={channel:ch,phone:fmt,name:$('name').value.trim(),type:$('type').value,source:$('src').value,content:$('memo').value.trim(),key:key,timestamp:ts};
+    var btn=$('btn'); btn.disabled=true; btn.textContent='저장 중...';
+    fetch(HOOK,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        btn.disabled=false; btn.textContent='저장하고 알림 보내기';
+        if(j&&j.result==='success'){ show('ok','저장했습니다. ('+ch+' '+fmt+')'); $('f').reset(); }
+        else{ show('err','저장하지 못했습니다. 열쇠가 맞는지 확인해 주세요. ('+((j&&j.message)||'오류')+')'); }
+      })
+      .catch(function(){ btn.disabled=false; btn.textContent='저장하고 알림 보내기'; show('err','응답을 확인하지 못했습니다. 시트의 수동접수 탭에서 저장 여부를 확인해 주세요.'); });
+  });
+})();
+</script>
+</body>
+</html>
