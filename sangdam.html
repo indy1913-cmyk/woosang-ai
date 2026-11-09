@@ -52,6 +52,9 @@ textarea{min-height:110px;resize:vertical}
 .submit:disabled{opacity:.6;cursor:wait}
 .err{color:#d1453b;font-size:14px;margin-top:8px;display:none}
 .privacy{font-size:13px;color:#5b6770;margin-top:12px}
+.agree{display:flex;gap:8px;align-items:flex-start;margin:14px 0 4px;font-size:14px;font-weight:600;color:#14213d;cursor:pointer}
+.agree input{width:20px;height:20px;margin-top:1px;flex:none}
+.agree-d{font-size:12.5px;color:#5b6770;line-height:1.55;margin:2px 0 12px;padding:10px 12px;background:#f4f7f6;border-radius:8px}
 .done{display:none;text-align:center;padding:30px 20px}
 .done .ic{font-size:46px}
 .done h2{margin:8px 0}
@@ -122,6 +125,8 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
 <label class="q" for="when">연락 받기 편한 시간<span class="opt">선택</span></label>
 <select id="when"><option value="">언제든 괜찮아요</option><option>오전 9시~12시</option><option>오후 12시~6시</option><option>저녁 6시~8시</option><option>문자로 먼저 연락 원함</option></select>
 
+<label class="agree" for="agree"><input type="checkbox" id="agree"><span>[필수] 개인정보 수집·이용에 동의합니다.</span></label>
+<p class="agree-d">수집 항목: 연락처, 성함(선택), 입력하신 상담 분야·상황·연락 희망 시간 / 이용 목적: 상담 신청 확인 및 연락, 상담 예약 / 보유·이용 기간: 상담 목적 달성 후 지체 없이 파기(법령상 보존이 필요한 경우 제외). 동의를 거부하실 수 있으며, 거부 시 온라인 신청이 제한되므로 전화(02-927-9665)로 상담해 주세요.</p>
 <button type="submit" class="submit" id="submitBtn">무료 상담 신청하기</button>
 <p class="err" id="err"></p>
 <p class="privacy">🔒 남겨주신 연락처와 내용은 상담 연락 목적으로만 사용하며 외부에 공개하지 않습니다. 주민등록번호·계좌 비밀번호 등 민감정보는 적지 마세요.</p>
@@ -179,6 +184,7 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
     var t=document.querySelector('input[name=type]:checked');
     if(!/^0\d{8,10}$/.test(phone)){showErr('연락처를 숫자로 정확히 입력해 주세요. (예: 01012345678)'); $('phone').focus(); return;}
     if(!t){showErr('어떤 문제인지 하나만 골라주세요.'); return;}
+    if(!$('agree').checked){showErr('개인정보 수집·이용 동의에 체크해 주세요.'); $('agree').focus(); return;}
     var picked=t.value;
     var type = picked==='압류' ? '개인회생' : picked;
     var parts=[];
@@ -192,6 +198,7 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:6px 18px 30px}
     if($('when').value) parts.push('연락 가능 시간: '+$('when').value);
     parts.push('유입경로: '+clean(source()));
     parts.push('접수: 홈페이지 상담신청');
+    parts.push('개인정보 동의: 예');
     if($('content').value.trim()) parts.push('상담 내용: '+clean($('content').value));
     var now=new Date(), pad=function(n){return String(n).padStart(2,'0');};
     var ts=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+' '+pad(now.getHours())+':'+pad(now.getMinutes());
