@@ -210,5 +210,38 @@ footer{text-align:center;font-size:13px;color:#6b7780;padding:10px 18px 30px}
 <footer>우상법률사무소 · 서울 성북구 보문로 171 노블레스클래식 403호 · 02-927-9665 · 대표변호사 김무경</footer>
 
 <nav class="bar"><a class="call" href="tel:050713229665">📞 전화 상담</a><a class="calc" href="https://www.woosanglaw.com/byeonjegeum.html?utm_source=guide&amp;utm_medium=referral&amp;utm_campaign=calc">🧮 변제금 계산</a><a class="form" href="https://www.woosanglaw.com/sangdam.html?utm_source=seongbuk-hoesaeng-pasan-guide&amp;utm_medium=referral&amp;utm_campaign=sangdam">📝 상담 신청</a></nav>
+
+<style>
+#wa-cta{position:fixed;left:22px;bottom:22px;z-index:70;display:flex;flex-direction:column;gap:8px;font-family:inherit}
+#wa-cta a{display:flex;align-items:center;justify-content:center;gap:6px;min-width:168px;height:44px;padding:0 18px;border-radius:24px;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.18);color:#fff;letter-spacing:-.2px}
+#wa-cta .c1{background:#1a7f4b}#wa-cta .c2{background:#03c75a}#wa-cta .c3{background:#14213d}
+#wa-cta .s{display:none}#wa-cta a:hover{filter:brightness(1.08)}
+@media (max-width:768px){
+ #wa-cta{left:0;right:0;bottom:0;flex-direction:row;gap:0;box-shadow:0 -2px 10px rgba(0,0,0,.15)}
+ #wa-cta a{flex:1;min-width:0;height:56px;border-radius:0;font-size:14px;padding:0 4px;box-shadow:none}
+ body{padding-bottom:56px}#wa-cta .l{display:none}#wa-cta .s{display:inline}
+ .chatbot-wrap{bottom:72px!important}
+}
+</style>
+<div id="wa-cta">
+ <a class="c1" href="https://www.woosanglaw.com/sangdam.html?utm_source=seongbuk-hoesaeng-pasan-guide&amp;utm_medium=referral&amp;utm_campaign=sangdam&amp;type=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D" target="_blank" rel="noopener" data-cv="selftest">📝 <span class="l">1분 무료 </span>자가진단</a>
+ <a class="c2" href="https://talk.naver.com/W4H0A9" target="_blank" rel="noopener" data-cv="talk">💬 <span class="l">네이버 </span>톡톡상담</a>
+ <a class="c3" href="tel:050713229665" data-cv="tel">📞 <span class="l">02-927-9665</span><span class="s">전화상담</span></a>
+</div>
+<script>
+(function(){var m={selftest:'custom003',talk:'custom002',tel:'custom001'};
+function kind(a){var d=a.getAttribute('data-cv');if(d)return d;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0)return 'tel';if(h.indexOf('talk.naver.com')>-1)return 'talk';if(h.indexOf('form.naver.com')>-1||h.indexOf('sangdam.html')>-1||h.indexOf('woosang_ai_counsel')>-1)return 'selftest';return null;}
+document.querySelectorAll('a[href], #chatbot, .pa-btn-cta').forEach(function(a){var k=a.tagName==='A'?kind(a):'selftest';if(!k)return;a.addEventListener('click',function(){try{if(window.wcs&&wcs.trans){wcs.trans({type:m[k]});}}catch(e){}});});})();
+</script>
+
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript">
+if (window.wcs) {
+  if(!wcs_add) var wcs_add = {};
+  wcs_add["wa"] = "s_684ed75527c";
+  wcs.inflow("woosanglaw.com");
+  wcs_do();
+}
+</script>
 </body>
 </html>
