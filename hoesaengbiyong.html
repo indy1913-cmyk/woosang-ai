@@ -389,7 +389,8 @@ if (window.wcs) {
 <script>
 (function(){var m={selftest:'custom003',talk:'custom002',tel:'custom001'};
 function kind(a){var d=a.getAttribute('data-cv');if(d)return d;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0)return 'tel';if(h.indexOf('talk.naver.com')>-1)return 'talk';if(h.indexOf('form.naver.com')>-1||h.indexOf('sangdam.html')>-1||h.indexOf('woosang_ai_counsel')>-1)return 'selftest';return null;}
-document.querySelectorAll('a[href], #chatbot, .pa-btn-cta').forEach(function(a){var k=a.tagName==='A'?kind(a):'selftest';if(!k)return;a.addEventListener('click',function(){try{if(window.wcs&&wcs.trans){wcs.trans({type:m[k]});}}catch(e){}});});})();
+var HK='https://script.google.com/macros/s/AKfycbygXwjSNlQ2dq8t_-38MCFgbjendBHIQFx_TBXIeeEV3IfUUgJpINJrAMCanJF2WANEoA/exec';function wsLog(k){if(k!=='tel'&&k!=='talk')return;try{var s=(typeof window.wsSource==='function'&&window.wsSource())||'직접 방문';var key='ws_log_'+k;if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,'1');var d=new Date(),p=function(n){return String(n).padStart(2,'0')};var ts=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());fetch(HK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({channel:k==='tel'?'전화':'톡톡',source:s,page:location.pathname.replace(/^\//,'')||'home',timestamp:ts}),keepalive:true});}catch(e){}}
+document.querySelectorAll('a[href], #chatbot, .pa-btn-cta').forEach(function(a){var k=a.tagName==='A'?kind(a):'selftest';if(!k)return;a.addEventListener('click',function(){try{if(window.wcs&&wcs.trans){wcs.trans({type:m[k]});}}catch(e){}try{wsLog(k);}catch(e){}});});})();
 </script>
 </body>
 </html>
